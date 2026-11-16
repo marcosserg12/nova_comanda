@@ -74,6 +74,11 @@ class TodayOrders extends Component
     public function confirmCancel(): void
     {
         Gate::authorize('manage-orders');
+
+        if ($this->cancelingOrderId === null) {
+            return;
+        }
+
         $this->validate(
             [
                 'cancelReason' => ['required', Rule::in(self::CANCEL_REASONS)],

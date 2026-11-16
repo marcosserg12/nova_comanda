@@ -29,7 +29,11 @@
                                 'bg-red-100 text-red-700' => $order->status === OrderStatus::Canceled,
                             ])>{{ $order->status->label() }}</span>
                         </td>
-                        <td class="px-4 py-3 tabular-nums text-stone-500">{{ $order->created_at->format('H:i') }}</td>
+                        <td class="px-4 py-3 tabular-nums text-stone-500">{{ $order->created_at->format('H:i') }}
+                            @if (in_array($order->status, [OrderStatus::Preparing, OrderStatus::Ready], true))
+                                · há {{ (int) floor(abs($order->created_at->diffInMinutes(now()))) }} min
+                            @endif
+                        </td>
                         <td class="px-4 py-3 text-right font-black tabular-nums">{{ Money::format($order->total_cents) }}</td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-2">

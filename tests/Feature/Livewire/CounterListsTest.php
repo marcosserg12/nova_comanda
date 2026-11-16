@@ -85,3 +85,61 @@ it('forbids the kitchen profile from cancelling', function () {
         ->call('startCancel', $order->id)
         ->assertForbidden();
 });
+
+it('shows the waiting time for orders in progress', function () {
+    placeOrder([item($this->dish)]);
+
+    $this->travel(7)->minutes();
+
+    Livewire::actingAs($this->user)->test(TodayOrders::class)->assertSee('há 7 min');
+});
+
+it('forbids the kitchen profile from manager actions but allows markReady', function (string $method) {
+    $order = placeOrder([item($this->dish)]);
+
+    Livewire::actingAs(userWithRole(Role::Cozinha))->test(TodayOrders::class)
+        ->call($method, $order->id)
+        ->assertForbidden();
+})->with(['markDelivered', 'backToPreparing', 'edit', 'startCancel']);
+
+it('lets the kitchen profile mark ready', function () {
+    $order = placeOrder([item($this->dish)]);
+
+    Livewire::actingAs(userWithRole(Role::Cozinha))->test(TodayOrders::class)->call('markReady', $order->id);
+
+    expect($order->fresh()->status)->toBe(OrderStatus::Ready);
+});
+
+it('stores a preset cancel reason as is', function () {
+    $order = placeOrder([item($this->dish)]);
+
+    Livewire::actingAs($this->user)->test(TodayOrders::class)
+        ->call('startCancel', $order->id)
+        ->set('cancelReason', 'Cliente desistiu')
+        ->call('confirmCancel')->assertHasNoErrors();
+
+    expect($order->fresh()->cancel_reason)->toBe('Cliente desistiu');
+});
+
+it('rejects an invalid cancel reason', function () {
+    $order = placeOrder([item($this->dish)]);
+
+    Livewire::actingAs($this->user)->test(TodayOrders::class)
+        ->call('startCancel', $order->id)
+        ->set('cancelReason', 'Qualquer')
+        ->call('confirmCancel')->assertHasErrors('cancelReason');
+
+    expect($order->fresh()->status)->toBe(OrderStatus::Preparing);
+});
+
+it('does not let the client set cancelingOrderId', function () {
+    Livewire::actingAs($this->user)->test(TodayOrders::class)->set('cancelingOrderId', 1);
+})->throws(\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException::class);
+
+it('ignores confirmCancel without a selected order', function () {
+    $order = placeOrder([item($this->dish)]);
+
+    Livewire::actingAs($this->user)->test(TodayOrders::class)->call('confirmCancel')->assertHasNoErrors();
+
+    expect($order->fresh()->status)->toBe(OrderStatus::Preparing);
+});
