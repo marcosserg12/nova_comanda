@@ -35,3 +35,23 @@ it('logs out', function () {
     $this->actingAs(userWithRole(Role::Balcao))->post('/logout')->assertRedirect(route('login'));
     $this->assertGuest();
 });
+
+it('sends the user back to the screen they tried to open', function () {
+    User::factory()->create(['username' => 'cozinha', 'password' => 'segredo123', 'role' => Role::Cozinha]);
+
+    $this->get('/cozinha')->assertRedirect(route('login'));
+
+    $this->post('/login', ['username' => 'cozinha', 'password' => 'segredo123'])
+        ->assertRedirect(route('cozinha'));
+});
+
+it('renders the restyled login with the same fields', function () {
+    $this->get('/login')
+        ->assertOk()
+        ->assertSee('Entre para usar o balcão, a cozinha ou a administração.')
+        ->assertSee('name="username"', false)
+        ->assertSee('name="password"', false)
+        ->assertSee('name="remember"', false)
+        ->assertSee('Manter conectado neste aparelho')
+        ->assertSee('Entrar');
+});

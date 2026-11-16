@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Role;
-use Illuminate\Http\RedirectResponse;
+use App\Support\Launchpad;
+use App\Support\Screen;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 final class HomeController
 {
-    public function __invoke(Request $request): RedirectResponse
+    public function __invoke(Request $request): View
     {
-        $user = $request->user();
+        $screens = Launchpad::for($request->user());
 
-        if ($user === null) {
-            return redirect()->route('login');
-        }
-
-        return redirect()->route($user->hasRole(Role::Cozinha) ? 'cozinha' : 'estacao');
+        return view('pages.inicio', [
+            'screens' => $screens,
+            'allowed' => collect($screens)
+                ->reject(fn (Screen $screen) => $screen->key === 'login')
+                ->mapWithKeys(fn (Screen $screen) => [$screen->key => $screen->url])
+                ->all(),
+            'choosing' => $request->boolean('escolher'),
+        ]);
     }
 }

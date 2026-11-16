@@ -7,9 +7,13 @@ it('sends guests to the login page', function (string $path) {
     $this->get($path)->assertRedirect(route('login'));
 })->with(['/estacao', '/balcao', '/cozinha']);
 
-it('redirects home by role', function (Role $role, string $route) {
-    $this->actingAs(userWithRole($role))->get('/')->assertRedirect(route($route));
-})->with([[Role::Admin, 'estacao'], [Role::Balcao, 'estacao'], [Role::Cozinha, 'cozinha']]);
+it('shows the home screen to every profile instead of redirecting', function (?Role $role) {
+    if ($role !== null) {
+        $this->actingAs(userWithRole($role));
+    }
+
+    $this->get('/')->assertOk()->assertSee('Onde você quer entrar?');
+})->with([Role::Admin, Role::Balcao, Role::Cozinha, null]);
 
 it('keeps the kitchen profile out of the counter screens', function () {
     $cozinha = userWithRole(Role::Cozinha);
