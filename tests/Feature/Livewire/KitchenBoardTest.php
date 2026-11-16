@@ -154,3 +154,21 @@ it('flags highlighted cards below the fold on a tappable footer pill', function 
         ->assertSeeHtml('isHighlighted('.$order->id.')')
         ->assertSeeHtml('tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"');
 });
+
+it('renders the edited-at stamp so the board can flag edits without the websocket', function () {
+    $dish = kitchenProduct();
+    $order = placeOrder([item($dish)], ['customer_name' => 'Rita']);
+
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-edited-at=""');
+
+    app(UpdateOrderItems::class)->handle($order, ['customer_name' => 'Rita', 'takeaway' => false, 'items' => [item($dish, 2)]]);
+
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-edited-at="'.$order->fresh()->edited_at->timestamp.'"');
+});
+
+it('keeps the board root from taking focus away from the counter', function () {
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('@pointerdown.prevent @mousedown.prevent');
+});

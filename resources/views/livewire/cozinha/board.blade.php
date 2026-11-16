@@ -1,4 +1,5 @@
 <div x-data="kitchenBoard" @kitchen-highlight.window="highlight($event.detail)" @kitchen-not-found.window="notFound($event.detail.number)"
+     @pointerdown.prevent @mousedown.prevent
      wire:poll.20s class="relative flex h-full min-h-0 flex-col bg-nana-cream text-nana-ink">
     <x-ui.topbar title="Cozinha" current="cozinha">
         <x-slot:badge>
@@ -15,7 +16,7 @@
         @forelse ($this->orders as $index => $order)
             @php($minutes = (int) floor(abs($order->created_at->diffInMinutes(now()))))
             @php($state = $minutes >= $lateMinutes ? 'late' : ($minutes >= $warnMinutes ? 'warn' : 'ok'))
-            <article wire:key="k-{{ $order->id }}" data-order-id="{{ $order->id }}" data-number="{{ $order->displayNumber() }}" data-kitchen-state="{{ $state }}"
+            <article wire:key="k-{{ $order->id }}" data-order-id="{{ $order->id }}" data-number="{{ $order->displayNumber() }}" data-edited-at="{{ $order->edited_at?->timestamp }}" data-kitchen-state="{{ $state }}"
                      @pointerdown.prevent @mousedown.prevent @click="acknowledge({{ $order->id }})"
                      :class="{ 'ring-4 ring-nana-ink ring-offset-4 ring-offset-nana-cream': selected === {{ $index }} }"
                      @class([
@@ -82,6 +83,11 @@
                 class="ml-auto rounded-md bg-nana-yellow px-3 py-1 font-extrabold text-nana-ink"
                 x-text="'+' + below + (below === 1 ? ' pedido abaixo ↓' : ' pedidos abaixo ↓')"></button>
     </footer>
+
+    <div x-show="notice" x-cloak role="status" data-kitchen-notice
+         class="absolute inset-x-4 bottom-16 z-10 rounded-lg border-2 border-nana-ink bg-nana-red px-5 py-3 text-xl font-extrabold text-white shadow-hard">
+        <span x-text="notice"></span>
+    </div>
 
     <div x-show="undoBar" x-cloak
          class="absolute inset-x-4 bottom-16 z-10 flex items-center justify-between gap-4 rounded-lg border-2 border-nana-ink bg-nana-green px-5 py-3 text-xl font-extrabold text-white shadow-hard">

@@ -2,6 +2,8 @@ import { keepScreenAwake } from './device';
 
 const UNDO_MS = 10000;
 const HIGHLIGHT_MS = 60000;
+const TYPED_CLEAR_MS = 6000;
+const NOTICE_MS = 4000;
 const HIGHLIGHT_KINDS = ['created', 'updated'];
 
 export function registerKitchen(Alpine) {
@@ -10,6 +12,11 @@ export function registerKitchen(Alpine) {
         let resizeObserver = null;
         let mutationObserver = null;
         let frame = null;
+        let typedTimer = null;
+        let noticeTimer = null;
+        // Known cards never get highlighted as new; keeping ids after they leave stops an undone ready from showing NOVO.
+        const knownIds = new Set();
+        const editedAt = new Map();
 
         return {
             selected: 0,
@@ -17,6 +24,7 @@ export function registerKitchen(Alpine) {
             lastReady: null,
             undoBar: '',
             undoTimer: null,
+            notice: '',
             keyHandler: null,
             highlights: {},
             below: 0,
@@ -26,6 +34,7 @@ export function registerKitchen(Alpine) {
                 this.keyHandler = (event) => this.onKey(event);
                 window.addEventListener('keydown', this.keyHandler, { capture: true });
                 keepScreenAwake();
+                this.cards().forEach((card) => this.track(card));
                 this.$nextTick(() => {
                     const grid = this.grid();
                     if (!grid) {
@@ -33,7 +42,10 @@ export function registerKitchen(Alpine) {
                     }
                     resizeObserver = new ResizeObserver(() => this.scheduleOverflow());
                     resizeObserver.observe(grid);
-                    mutationObserver = new MutationObserver(() => this.scheduleOverflow());
+                    mutationObserver = new MutationObserver(() => {
+                        this.scanCards();
+                        this.scheduleOverflow();
+                    });
                     mutationObserver.observe(grid, { childList: true, subtree: true, characterData: true });
                     this.updateOverflow();
                 });
@@ -46,6 +58,29 @@ export function registerKitchen(Alpine) {
                 highlightTimers.forEach((timer) => clearTimeout(timer));
                 highlightTimers.clear();
                 clearTimeout(this.undoTimer);
+                clearTimeout(typedTimer);
+                clearTimeout(noticeTimer);
+            },
+            track(card) {
+                const id = Number(card.dataset.orderId);
+                knownIds.add(id);
+                editedAt.set(id, Number(card.dataset.editedAt) || 0);
+            },
+            // The websocket event is only the fast path: cards that show up (or get a newer edit) in the 20 s poll are highlighted here too.
+            scanCards() {
+                this.cards().forEach((card) => {
+                    const id = Number(card.dataset.orderId);
+                    if (!knownIds.has(id)) {
+                        this.track(card);
+                        this.highlight({ orderId: id, kind: 'created' });
+                        return;
+                    }
+                    const edited = Number(card.dataset.editedAt) || 0;
+                    if (edited > (editedAt.get(id) ?? 0)) {
+                        editedAt.set(id, edited);
+                        this.highlight({ orderId: id, kind: 'updated' });
+                    }
+                });
             },
             grid() {
                 return this.$root.querySelector('[data-kitchen-grid]');
@@ -113,7 +148,9 @@ export function registerKitchen(Alpine) {
             },
             notFound(number) {
                 this.undoBar = '';
-                window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'error', message: `Pedido ${number} não está na fila.` } }));
+                this.notice = `Pedido ${number} não está na fila.`;
+                clearTimeout(noticeTimer);
+                noticeTimer = setTimeout(() => { this.notice = ''; }, NOTICE_MS);
             },
             onKey(event) {
                 if (!event.code || !event.code.startsWith('Numpad') || !this.isActive()) {
@@ -130,12 +167,15 @@ export function registerKitchen(Alpine) {
                 const digit = event.code.match(/^Numpad(\d)$/);
                 if (digit) {
                     this.typed = (this.typed + digit[1]).slice(-3);
+                    clearTimeout(typedTimer);
+                    typedTimer = setTimeout(() => { this.typed = ''; }, TYPED_CLEAR_MS);
                 } else if (event.code === 'NumpadEnter') {
                     this.confirm();
                 } else if (event.code === 'NumpadAdd') {
                     this.selected = count === 0 ? 0 : (this.selected + 1) % count;
                 } else if (event.code === 'NumpadDecimal') {
                     this.typed = '';
+                    clearTimeout(typedTimer);
                 } else if (event.code === 'NumpadSubtract') {
                     this.undo();
                 }
@@ -144,6 +184,7 @@ export function registerKitchen(Alpine) {
                 if (this.typed) {
                     const number = parseInt(this.typed, 10);
                     this.typed = '';
+                    clearTimeout(typedTimer);
                     const id = await this.$wire.markReadyByNumber(number);
                     if (id) {
                         this.acknowledge(id);
