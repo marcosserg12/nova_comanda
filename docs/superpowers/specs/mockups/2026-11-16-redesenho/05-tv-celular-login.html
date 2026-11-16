@@ -1,0 +1,133 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Archivo+Black&display=swap');
+.n-wrap{background:#d9d6d0;padding:14px;border-radius:12px}
+.n-cap{font:600 11px/1.3 system-ui;color:#444;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.row1{display:grid;grid-template-columns:66fr 34fr;gap:14px;align-items:start}
+.row2{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:14px;align-items:start;margin-top:16px}
+.mk{container-type:inline-size;aspect-ratio:16/9;overflow:hidden;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.18);position:relative}
+.mk.ph{aspect-ratio:390/780;border-radius:18px;border:6px solid #161616}
+.C{--ink:#161616;--red:#D62828;--cream:#FFF2D9;--yel:#FFB703;--ok:#1F8A50;width:100%;height:100%;background:var(--cream);color:var(--ink);font-family:'Archivo',system-ui}
+/* TV */
+.tv{display:grid;grid-template-columns:1fr 36cqw;height:100%}
+.tv .prep{padding:2.2cqw 2.4cqw;display:flex;flex-direction:column}
+.tv h1{margin:0 0 1.6cqw;font:400 3.6cqw/1 'Archivo Black';display:flex;align-items:center;gap:1.2cqw}
+.tv h1 span{font:800 1.8cqw/1 'Archivo';background:var(--ink);color:var(--cream);padding:.5cqw 1cqw;border-radius:.6cqw}
+.tv .g{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2cqw}
+.tv .n{background:#fff;border:.25cqw solid var(--ink);border-radius:.8cqw;box-shadow:.35cqw .35cqw 0 var(--ink);text-align:center;padding:1.1cqw .6cqw}
+.tv .n b{display:block;font:400 4.2cqw/1 'Archivo Black'}
+.tv .n small{display:block;font:700 1.7cqw/1.2 'Archivo';color:#5d554b;margin-top:.3cqw}
+.tv .ready{background:var(--red);color:var(--cream);border-left:.4cqw solid var(--ink);padding:2.2cqw 2.4cqw;display:flex;flex-direction:column}
+.tv .ready h1 span{background:var(--cream);color:var(--red)}
+.tv .r{background:var(--cream);color:var(--ink);border:.25cqw solid var(--ink);border-radius:.8cqw;box-shadow:.35cqw .35cqw 0 var(--ink);display:flex;align-items:center;justify-content:space-between;padding:1.2cqw 1.8cqw;margin-bottom:1.2cqw}
+.tv .r b{font:400 5.4cqw/1 'Archivo Black'}
+.tv .r span{font:800 2.6cqw/1 'Archivo'}
+.tv .foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between}
+.tv .qr{background:#fff;border:.25cqw solid var(--ink);border-radius:.8cqw;padding:.9cqw;text-align:center;color:var(--ink);font:800 1.15cqw/1.2 'Archivo';width:12cqw}
+.tv .qr i{display:block;aspect-ratio:1;margin-bottom:.6cqw;background:repeating-conic-gradient(#161616 0 25%,#fff 0 50%) 0 0/2.2cqw 2.2cqw;border:.5cqw solid #fff;outline:.2cqw solid #161616}
+.tv .clock{font:400 3.6cqw/1 'Archivo Black'}
+.tv .logo{font:400 2cqw/1 'Archivo Black';color:var(--red);margin-top:auto}
+.ov{position:absolute;inset:0;background:#FFB703;border:1.4cqw solid #161616;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Archivo';color:#161616}
+.ov p{margin:0;font:400 5cqw/1 'Archivo Black'}
+.ov b{font:400 17cqw/1 'Archivo Black'}
+.ov span{font:800 6cqw/1 'Archivo'}
+.ov em{font-style:normal;font:700 2.4cqw/1 'Archivo';margin-top:1.5cqw;background:#161616;color:#FFF2D9;padding:.8cqw 1.6cqw;border-radius:.8cqw}
+/* phone */
+.phn{height:100%;display:flex;flex-direction:column}
+.phn .top{background:var(--red);color:var(--cream);text-align:center;padding:5cqw 4cqw 4cqw;border-bottom:1cqw solid var(--ink)}
+.phn .top b{font:400 8cqw/1 'Archivo Black'}
+.phn .top small{display:block;font:700 3.6cqw/1.3 'Archivo';color:#FFE3B0;margin-top:1.5cqw}
+.phn main{padding:5cqw;display:flex;flex-direction:column;gap:4cqw}
+.phn .in{background:#fff;border:.8cqw solid var(--ink);border-radius:3cqw;padding:3.5cqw 4cqw;font:400 8cqw/1 'Archivo Black';display:flex;justify-content:space-between;align-items:center}
+.phn .in small{font:800 3.4cqw/1 'Archivo';color:#6B6257}
+.phn .me{border:.8cqw solid var(--ink);border-radius:3cqw;box-shadow:1.4cqw 1.4cqw 0 var(--ink);padding:5cqw;text-align:center;background:#fff}
+.phn .me p{margin:0;font:800 4cqw/1.2 'Archivo';color:#5d554b}
+.phn .me b{display:block;font:400 18cqw/1 'Archivo Black';margin:2cqw 0}
+.phn .me span{display:inline-block;font:800 4.6cqw/1 'Archivo';padding:2.2cqw 4cqw;border-radius:2cqw;border:.6cqw solid var(--ink);background:var(--cream)}
+.phn .me.ok{background:#FFB703}
+.phn .me.ok span{background:#161616;color:#FFF2D9}
+.phn .lst{font:700 3.8cqw/1.4 'Archivo';color:#5d554b}
+.phn .lst b{color:var(--ink);font:400 4.6cqw/1 'Archivo Black';margin-right:2cqw}
+/* login */
+.lg{height:100%;display:grid;place-items:center;background:var(--red)}
+.lg .box{background:var(--cream);border:.35cqw solid var(--ink);border-radius:1.4cqw;box-shadow:.7cqw .7cqw 0 var(--ink);width:38cqw;padding:3cqw}
+.lg h2{margin:0 0 .4cqw;font:400 3.4cqw/1 'Archivo Black';color:var(--red)}
+.lg p{margin:0 0 2cqw;font:600 1.5cqw/1.3 'Archivo';color:#5d554b}
+.lg label{display:block;font:800 1.15cqw/1 'Archivo';text-transform:uppercase;letter-spacing:.06em;color:#5d554b;margin-bottom:.6cqw}
+.lg .f{background:#fff;border:.25cqw solid var(--ink);border-radius:.8cqw;height:4.4cqw;margin-bottom:1.6cqw;font:700 1.9cqw/4.4cqw 'Archivo';padding:0 1.2cqw}
+.lg .ck{display:flex;gap:.8cqw;align-items:center;font:700 1.45cqw/1 'Archivo';margin-bottom:1.8cqw}
+.lg .ck i{width:2cqw;height:2cqw;border:.25cqw solid var(--ink);border-radius:.4cqw;background:var(--yel);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:1.3cqw}
+.lg .bt{background:var(--ink);color:var(--cream);text-align:center;font:400 2cqw/1 'Archivo Black';padding:1.6cqw;border-radius:.8cqw}
+.notes{font:500 13px/1.5 system-ui;color:#333;margin-top:12px}
+</style>
+
+<h2>TV, celular do cliente e login no estilo novo</h2>
+<p class="subtitle">Mesma lógica de hoje, com o visual escolhido. A TV continua anunciando o pedido pronto em tela cheia — ali o aviso é para o cliente ver.</p>
+
+<div class="n-wrap">
+  <div class="row1">
+    <div>
+      <p class="n-cap">TV — normal</p>
+      <div class="mk"><div class="C"><div class="tv">
+        <div class="prep">
+          <h1>Preparando <span>8</span></h1>
+          <div class="g">
+            <div class="n"><b>007</b><small>Rafa</small></div><div class="n"><b>009</b><small>Carlos</small></div><div class="n"><b>010</b><small>Bia</small></div><div class="n"><b>011</b><small>Ana</small></div>
+            <div class="n"><b>013</b><small>Lu</small></div><div class="n"><b>014</b><small>Maria</small></div><div class="n"><b>015</b><small>Pedro</small></div><div class="n"><b>016</b><small>Gabi</small></div>
+          </div>
+          <div class="logo">Nana Lanches</div>
+        </div>
+        <div class="ready">
+          <h1>Pronto! <span>2</span></h1>
+          <div class="r"><b>012</b><span>João</span></div>
+          <div class="r"><b>008</b><span>Duda</span></div>
+          <div class="foot"><div class="qr"><i></i>Acompanhe pelo celular</div><div class="clock">12:41</div></div>
+        </div>
+      </div></div></div>
+    </div>
+    <div>
+      <p class="n-cap">TV — quando um pedido fica pronto (≈8 s)</p>
+      <div class="mk"><div class="ov"><p>PEDIDO PRONTO</p><b>012</b><span>João</span><em>Retire no balcão</em></div></div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div>
+      <p class="n-cap">Celular — preparando</p>
+      <div class="mk ph"><div class="C"><div class="phn">
+        <div class="top"><b>Nana Lanches</b><small>Acompanhe seu pedido</small></div>
+        <main>
+          <div class="in">014<small>SEU NÚMERO</small></div>
+          <div class="me"><p>Pedido</p><b>014</b><span>Preparando…</span></div>
+          <div class="lst"><b>012</b>João — pronto<br><b>013</b>Lu — preparando</div>
+        </main>
+      </div></div></div>
+    </div>
+    <div>
+      <p class="n-cap">Celular — ficou pronto (vibra)</p>
+      <div class="mk ph"><div class="C"><div class="phn">
+        <div class="top"><b>Nana Lanches</b><small>Acompanhe seu pedido</small></div>
+        <main>
+          <div class="in">014<small>SEU NÚMERO</small></div>
+          <div class="me ok"><p>Seu pedido está</p><b style="font-size:13.5cqw">PRONTO!</b><span>Retire no balcão</span></div>
+          <div class="lst"><b>015</b>Pedro — preparando</div>
+        </main>
+      </div></div></div>
+    </div>
+    <div>
+      <p class="n-cap">Login</p>
+      <div class="mk"><div class="C"><div class="lg"><div class="box">
+        <h2>Nana Lanches</h2><p>Entre para usar o balcão, a cozinha ou a administração.</p>
+        <label>Usuário</label><div class="f">balcao</div>
+        <label>Senha</label><div class="f">••••••••</div>
+        <div class="ck"><i>✓</i>Manter conectado neste aparelho</div>
+        <div class="bt">Entrar</div>
+      </div></div></div></div>
+    </div>
+  </div>
+  <p class="notes">Na TV os números ficam grandes para ler de longe; se passar de 12 pedidos preparando, os mais antigos aparecem primeiro e o resto vira “+N”. No celular, o cliente digita o número uma vez e a tela fica atualizando sozinha.</p>
+</div>
+
+<div class="options" style="margin-top:1.5rem">
+  <div class="option" data-choice="ok" onclick="toggleSelect(this)"><div class="letter">✓</div><div class="content"><h3>Está bom assim</h3><p>Fechar o visual e eu escrevo o documento do redesenho.</p></div></div>
+  <div class="option" data-choice="ajustar" onclick="toggleSelect(this)"><div class="letter">✎</div><div class="content"><h3>Quero ajustar</h3><p>Diga no terminal o que mudar.</p></div></div>
+</div>

@@ -1,0 +1,213 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Archivo:wght@500;600;800&family=Archivo+Black&display=swap');
+.cards.stack{grid-template-columns:1fr;gap:1.75rem}
+.cards.stack .card-image{aspect-ratio:auto;display:block;padding:14px;background:#d9d6d0}
+.pair{display:grid;grid-template-columns:64fr 36fr;gap:12px;align-items:start}
+.cap{font:600 11px/1.2 system-ui;color:#555;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.mk{container-type:inline-size;aspect-ratio:1366/768;overflow:hidden;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.scr{width:100%;height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font-family:var(--fb)}
+.top{display:flex;align-items:center;gap:1.6cqw;padding:1.3cqw 1.8cqw;border-bottom:var(--bw) solid var(--line);background:var(--topbg,transparent);color:var(--topink,var(--ink))}
+.brand{font:800 2.3cqw/1 var(--fh);letter-spacing:-.02em;color:var(--brandc,var(--primary))}
+.tabs{display:flex;gap:.6cqw}
+.tab{font:700 1.35cqw/1 var(--fb);padding:.9cqw 1.4cqw;border-radius:var(--r);color:var(--muted2,var(--muted))}
+.tab.on{background:var(--tabon,var(--ink));color:var(--tabonink,var(--bg))}
+.st{margin-left:auto;font:600 1.15cqw/1 var(--fb);display:flex;align-items:center;gap:.6cqw;color:var(--muted2,var(--muted))}
+.st i{width:.9cqw;height:.9cqw;border-radius:50%;background:var(--ok)}
+.body{flex:1;display:grid;grid-template-columns:1fr 31cqw;gap:1.4cqw;padding:1.4cqw 1.8cqw 1.8cqw;min-height:0}
+.chips{display:flex;gap:.7cqw;margin-bottom:1.2cqw;align-items:center}
+.chip{font:700 1.4cqw/1 var(--fb);padding:1cqw 1.6cqw;border-radius:99px;background:var(--surface);border:var(--bw) solid var(--line);box-shadow:var(--hs,none)}
+.chip.on{background:var(--accent);border-color:var(--accentb,var(--accent));color:var(--accentink,#1a1a1a)}
+.search{margin-left:auto;font:500 1.3cqw/1 var(--fb);color:var(--muted);padding:1cqw 1.4cqw;border-radius:var(--r);background:var(--surface);border:var(--bw) solid var(--line);width:18cqw}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1cqw}
+.p{background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r);padding:1.3cqw 1.4cqw;min-height:7.6cqw;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--hs,none);position:relative}
+.p b{font:700 1.45cqw/1.15 var(--fb)}
+.p small{display:block;font:600 1.1cqw/1.2 var(--fb);color:var(--primary);margin-top:.3cqw}
+.p em{font:800 1.7cqw/1 var(--fh);font-style:normal;margin-top:.8cqw}
+.p.in{outline:.35cqw solid var(--accent);outline-offset:-.35cqw}
+.p.in:after{content:"1";position:absolute;top:-.8cqw;right:-.6cqw;width:2.4cqw;height:2.4cqw;border-radius:50%;background:var(--primary);color:#fff;font:800 1.3cqw/2.4cqw var(--fb);text-align:center}
+.p.off{opacity:.45}
+.p.off small{color:var(--muted)}
+.ord{background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r);padding:1.6cqw;display:flex;flex-direction:column;box-shadow:var(--hs,none)}
+.ord h4{font:800 1.9cqw/1 var(--fh);margin:0 0 1.2cqw;display:flex;justify-content:space-between}
+.ord h4 span{color:var(--muted);font:600 1.3cqw/1 var(--fb)}
+.lbl{font:700 1cqw/1 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.5cqw}
+.inp{font:700 1.8cqw/1 var(--fb);padding:1cqw 1.2cqw;border-radius:var(--r);border:calc(var(--bw) + .1cqw) solid var(--primary);background:var(--inpbg,var(--surface));margin-bottom:1.2cqw}
+.ln{display:flex;align-items:center;gap:.8cqw;padding:1cqw 0;border-bottom:1px solid var(--line2,var(--line));font:600 1.35cqw/1.2 var(--fb)}
+.ln .q{display:flex;gap:.4cqw;align-items:center}
+.ln .q i{font-style:normal;width:2.3cqw;height:2.3cqw;border-radius:var(--r);display:grid;place-items:center;background:var(--bg);border:var(--bw) solid var(--line);font-weight:800}
+.ln .n{flex:1}
+.ln .n small{display:block;color:var(--muted);font-weight:500;font-size:1.1cqw}
+.tot{margin-top:auto;display:flex;justify-content:space-between;align-items:baseline;padding-top:1cqw;font:800 2cqw/1 var(--fh)}
+.send{margin-top:1cqw;background:var(--primary);color:var(--primaryink,#fff);text-align:center;font:800 1.75cqw/1 var(--fh);padding:1.7cqw;border-radius:var(--r);letter-spacing:.01em;box-shadow:var(--hs,none);border:var(--bw) solid var(--sendb,var(--primary))}
+/* kitchen */
+.kt{padding:1.6cqw 2cqw;display:flex;align-items:center;gap:1.6cqw;border-bottom:var(--bw) solid var(--kline,var(--line));background:var(--ktop,transparent)}
+.kt b{font:800 3.2cqw/1 var(--fh);color:var(--kink,var(--ink))}
+.kt span{font:700 2.4cqw/1 var(--fb);padding:.6cqw 1.2cqw;border-radius:var(--r);background:var(--kbadge,var(--surface));color:var(--kink,var(--ink))}
+.kt time{margin-left:auto;font:700 2.6cqw/1 var(--fb);color:var(--kink,var(--ink))}
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw;padding:1.6cqw;flex:1;min-height:0;align-content:start}
+.kg .tk{display:block;overflow:visible}
+.kg .tk .pr{display:block;border-radius:0 0 calc(var(--r) - .15cqw) calc(var(--r) - .15cqw)}
+.kg{flex:none!important}
+.tk{background:var(--ksurface,var(--surface));border:var(--bw) solid var(--kline,var(--line));border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--hs,none);color:var(--kink,var(--ink))}
+.tk header{display:flex;justify-content:space-between;align-items:baseline;padding:1.6cqw 2cqw .6cqw}
+.tk header b{font:800 4.4cqw/1 var(--fh)}
+.tk header em{font:700 2.4cqw/1 var(--fb);font-style:normal;color:var(--kmuted,var(--muted))}
+.tk header em.late{color:#E8590C}
+.tk h5{margin:0;padding:0 2cqw;font:700 2.9cqw/1.1 var(--fb)}
+.tk ul{list-style:none;margin:0;padding:1cqw 2cqw;font:600 2.4cqw/1.35 var(--fb);flex:1}
+.tk ul li b{font-weight:800}
+.tk .pr{background:var(--kbtn,var(--ok));color:#fff;text-align:center;font:800 2.7cqw/1 var(--fh);padding:1.7cqw;letter-spacing:.04em}
+.tk.new{outline:.8cqw solid var(--accent);outline-offset:-.8cqw}
+.tk.new header b:after{content:"NOVO";font:800 1.9cqw/1 var(--fb);background:var(--accent);color:#1a1a1a;padding:.5cqw .9cqw;border-radius:var(--r);margin-left:1.2cqw;vertical-align:middle}
+
+/* THEME A — clara e acolhedora */
+.tA{--bg:#F7F1E8;--surface:#fff;--ink:#231B16;--muted:#7D7065;--line:#EADFD1;--primary:#C8102E;--accent:#F5B800;--ok:#1E8E5A;--fh:'Bricolage Grotesque',system-ui;--fb:'Bricolage Grotesque',system-ui;--r:1.1cqw;--bw:1px;--hs:0 .2cqw .6cqw rgba(60,40,20,.07)}
+/* THEME B — escura profissional */
+.tB{--bg:#141210;--surface:#211D19;--ink:#F4EEE6;--muted:#A69C90;--line:#35302A;--primary:#E63946;--accent:#FFC233;--ok:#23A86B;--fh:'Barlow Condensed',system-ui;--fb:'Barlow',system-ui;--r:.9cqw;--bw:1px;--tabon:#F4EEE6;--tabonink:#141210;--inpbg:#171411;--brandc:#FFC233}
+/* THEME C — lanchonete marcante */
+.tC{--bg:#FFF2D9;--surface:#fff;--ink:#161616;--muted:#6B6257;--line:#161616;--line2:#E7D9C2;--primary:#D62828;--accent:#FFB703;--accentb:#161616;--ok:#1F8A50;--fh:'Archivo Black',system-ui;--fb:'Archivo',system-ui;--r:.7cqw;--bw:.2cqw;--hs:.35cqw .35cqw 0 #161616;--topbg:#D62828;--topink:#FFF2D9;--brandc:#FFF2D9;--tabon:#FFF2D9;--tabonink:#D62828;--muted2:#FFE3B0;--sendb:#161616}
+.tC .top{border-bottom:.3cqw solid #161616}
+.tC .st i{background:#7CFFB2}
+</style>
+
+<h2>Qual estilo combina mais com a Nana Lanches?</h2>
+<p class="subtitle">Escolha a direção visual. As três já resolvem o tamanho do monitor de 18,5" (1366×768): é assim que cada tela ficaria nele. À esquerda o balcão, à direita a cozinha (com o pedido novo destacado). Clique na que preferir — dá para misturar depois (ex.: balcão de um, cozinha de outro).</p>
+
+<div class="cards stack">
+
+  <div class="card" data-choice="clara" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="pair">
+        <div><p class="cap">Balcão</p><div class="mk"><div class="scr tA">
+          <div class="top"><div class="brand">Nana Lanches</div><div class="tabs"><div class="tab on">Novo pedido</div><div class="tab">Pedidos de hoje</div></div><div class="st"><i></i>Online</div></div>
+          <div class="body">
+            <div>
+              <div class="chips"><div class="chip on">Pratos</div><div class="chip">Sucos</div><div class="chip">Bebidas</div><div class="search">Buscar…</div></div>
+              <div class="grid">
+                <div class="p in"><b>Prato do dia<small>Feijoada</small></b><em>R$ 26,00</em></div>
+                <div class="p"><b>Prato econômico<small>Frango assado</small></b><em>R$ 17,00</em></div>
+                <div class="p"><b>Frango ao molho</b><em>R$ 23,00</em></div>
+                <div class="p"><b>Filé de frango</b><em>R$ 24,00</em></div>
+                <div class="p"><b>Parmegiana de frango</b><em>R$ 27,00</em></div>
+                <div class="p"><b>Carne de sol</b><em>R$ 32,00</em></div>
+                <div class="p"><b>Filé de peixe</b><em>R$ 29,00</em></div>
+                <div class="p"><b>Omelete especial</b><em>R$ 22,00</em></div>
+                <div class="p off"><b>Picanha bovina<small>Esgotado hoje</small></b><em>R$ 38,00</em></div>
+              </div>
+            </div>
+            <div class="ord">
+              <h4>Pedido <span>nº 013</span></h4>
+              <div class="lbl">Nome do cliente</div><div class="inp">Maria</div>
+              <div class="ln"><div class="q"><i>−</i>1<i>+</i></div><div class="n">Prato do dia: Feijoada<small>sem cebola</small></div>26,00</div>
+              <div class="ln"><div class="q"><i>−</i>2<i>+</i></div><div class="n">Suco de manga</div>12,00</div>
+              <div class="tot"><span>Total</span><span>R$ 38,00</span></div>
+              <div class="send">Enviar para a cozinha</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div><p class="cap">Cozinha</p><div class="mk"><div class="scr tA">
+          <div class="kt"><b>Cozinha</b><span>4</span><time>12:41</time></div>
+          <div class="kg">
+            <div class="tk new"><header><b>013</b><em>agora</em></header><h5>Maria</h5><ul><li><b>1×</b> Feijoada <small>(sem cebola)</small></li><li><b>2×</b> Suco de manga</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>012</b><em>6 min</em></header><h5>João</h5><ul><li><b>1×</b> Parmegiana de frango</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>011</b><em>9 min</em></header><h5>Ana</h5><ul><li><b>1×</b> Filé de frango</li><li><b>1×</b> Suco de limão</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>010</b><em class="late">16 min</em></header><h5>Bia</h5><ul><li><b>2×</b> Prato econômico</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>009</b><em class="late">18 min</em></header><h5>Carlos</h5><ul><li><b>1×</b> Carne de sol</li><li><b>1×</b> Suco de goiaba</li></ul><div class="pr">PRONTO</div></div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A · Clara e acolhedora</h3><p>Fundo creme, vermelho da Nana e amarelo para o que está selecionado. Leve, limpa, fácil de ler de dia. Parece um sistema de padaria moderna.</p></div>
+  </div>
+
+  <div class="card" data-choice="escura" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="pair">
+        <div><p class="cap">Balcão</p><div class="mk"><div class="scr tB">
+          <div class="top"><div class="brand">Nana Lanches</div><div class="tabs"><div class="tab on">Novo pedido</div><div class="tab">Pedidos de hoje</div></div><div class="st"><i></i>Online</div></div>
+          <div class="body">
+            <div>
+              <div class="chips"><div class="chip on">Pratos</div><div class="chip">Sucos</div><div class="chip">Bebidas</div><div class="search">Buscar…</div></div>
+              <div class="grid">
+                <div class="p in"><b>Prato do dia<small>Feijoada</small></b><em>R$ 26,00</em></div>
+                <div class="p"><b>Prato econômico<small>Frango assado</small></b><em>R$ 17,00</em></div>
+                <div class="p"><b>Frango ao molho</b><em>R$ 23,00</em></div>
+                <div class="p"><b>Filé de frango</b><em>R$ 24,00</em></div>
+                <div class="p"><b>Parmegiana de frango</b><em>R$ 27,00</em></div>
+                <div class="p"><b>Carne de sol</b><em>R$ 32,00</em></div>
+                <div class="p"><b>Filé de peixe</b><em>R$ 29,00</em></div>
+                <div class="p"><b>Omelete especial</b><em>R$ 22,00</em></div>
+                <div class="p off"><b>Picanha bovina<small>Esgotado hoje</small></b><em>R$ 38,00</em></div>
+              </div>
+            </div>
+            <div class="ord">
+              <h4>Pedido <span>nº 013</span></h4>
+              <div class="lbl">Nome do cliente</div><div class="inp">Maria</div>
+              <div class="ln"><div class="q"><i>−</i>1<i>+</i></div><div class="n">Prato do dia: Feijoada<small>sem cebola</small></div>26,00</div>
+              <div class="ln"><div class="q"><i>−</i>2<i>+</i></div><div class="n">Suco de manga</div>12,00</div>
+              <div class="tot"><span>Total</span><span>R$ 38,00</span></div>
+              <div class="send">ENVIAR PARA A COZINHA</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div><p class="cap">Cozinha</p><div class="mk"><div class="scr tB">
+          <div class="kt"><b>COZINHA</b><span>4</span><time>12:41</time></div>
+          <div class="kg">
+            <div class="tk new"><header><b>013</b><em>agora</em></header><h5>Maria</h5><ul><li><b>1×</b> Feijoada <small>(sem cebola)</small></li><li><b>2×</b> Suco de manga</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>012</b><em>6 min</em></header><h5>João</h5><ul><li><b>1×</b> Parmegiana de frango</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>011</b><em>9 min</em></header><h5>Ana</h5><ul><li><b>1×</b> Filé de frango</li><li><b>1×</b> Suco de limão</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>010</b><em class="late">16 min</em></header><h5>Bia</h5><ul><li><b>2×</b> Prato econômico</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>009</b><em class="late">18 min</em></header><h5>Carlos</h5><ul><li><b>1×</b> Carne de sol</li><li><b>1×</b> Suco de goiaba</li></ul><div class="pr">PRONTO</div></div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B · Escura profissional</h3><p>Fundo grafite, amarelo para seleção e pedido novo, vermelho só no botão de enviar. Cansa menos a vista, destaca muito o que importa. É o estilo dos sistemas de cozinha de redes de restaurante.</p></div>
+  </div>
+
+  <div class="card" data-choice="lanchonete" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="pair">
+        <div><p class="cap">Balcão</p><div class="mk"><div class="scr tC">
+          <div class="top"><div class="brand">Nana Lanches</div><div class="tabs"><div class="tab on">Novo pedido</div><div class="tab">Pedidos de hoje</div></div><div class="st"><i></i>Online</div></div>
+          <div class="body">
+            <div>
+              <div class="chips"><div class="chip on">Pratos</div><div class="chip">Sucos</div><div class="chip">Bebidas</div><div class="search">Buscar…</div></div>
+              <div class="grid">
+                <div class="p in"><b>Prato do dia<small>Feijoada</small></b><em>R$ 26,00</em></div>
+                <div class="p"><b>Prato econômico<small>Frango assado</small></b><em>R$ 17,00</em></div>
+                <div class="p"><b>Frango ao molho</b><em>R$ 23,00</em></div>
+                <div class="p"><b>Filé de frango</b><em>R$ 24,00</em></div>
+                <div class="p"><b>Parmegiana de frango</b><em>R$ 27,00</em></div>
+                <div class="p"><b>Carne de sol</b><em>R$ 32,00</em></div>
+                <div class="p"><b>Filé de peixe</b><em>R$ 29,00</em></div>
+                <div class="p"><b>Omelete especial</b><em>R$ 22,00</em></div>
+                <div class="p off"><b>Picanha bovina<small>Esgotado hoje</small></b><em>R$ 38,00</em></div>
+              </div>
+            </div>
+            <div class="ord">
+              <h4>Pedido <span>nº 013</span></h4>
+              <div class="lbl">Nome do cliente</div><div class="inp">Maria</div>
+              <div class="ln"><div class="q"><i>−</i>1<i>+</i></div><div class="n">Prato do dia: Feijoada<small>sem cebola</small></div>26,00</div>
+              <div class="ln"><div class="q"><i>−</i>2<i>+</i></div><div class="n">Suco de manga</div>12,00</div>
+              <div class="tot"><span>Total</span><span>R$ 38,00</span></div>
+              <div class="send">Enviar para a cozinha</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div><p class="cap">Cozinha</p><div class="mk"><div class="scr tC">
+          <div class="kt" style="--ktop:#D62828;--kink:#FFF2D9;--kbadge:#161616"><b>Cozinha</b><span>4</span><time>12:41</time></div>
+          <div class="kg">
+            <div class="tk new"><header><b>013</b><em>agora</em></header><h5>Maria</h5><ul><li><b>1×</b> Feijoada <small>(sem cebola)</small></li><li><b>2×</b> Suco de manga</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>012</b><em>6 min</em></header><h5>João</h5><ul><li><b>1×</b> Parmegiana de frango</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>011</b><em>9 min</em></header><h5>Ana</h5><ul><li><b>1×</b> Filé de frango</li><li><b>1×</b> Suco de limão</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>010</b><em class="late">16 min</em></header><h5>Bia</h5><ul><li><b>2×</b> Prato econômico</li></ul><div class="pr">PRONTO</div></div>
+            <div class="tk"><header><b>009</b><em class="late">18 min</em></header><h5>Carlos</h5><ul><li><b>1×</b> Carne de sol</li><li><b>1×</b> Suco de goiaba</li></ul><div class="pr">PRONTO</div></div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C · Lanchonete marcante</h3><p>Faixa vermelha no topo, contornos pretos fortes e letras grossas, com cara de cardápio de lanchonete. Tem mais personalidade e é bem identificável, mas é mais “carregada”.</p></div>
+  </div>
+
+</div>

@@ -1,0 +1,85 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Archivo+Black&display=swap');
+.wrap{background:#d9d6d0;padding:14px;border-radius:12px}
+.mk{container-type:inline-size;aspect-ratio:1366/768;overflow:hidden;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.L{--ink:#161616;--red:#D62828;--cream:#FFF2D9;--yel:#FFB703;--hs:.35cqw .35cqw 0 #161616;width:100%;height:100%;background:var(--cream);color:var(--ink);font-family:'Archivo',system-ui;display:flex;flex-direction:column}
+.L .top{background:var(--red);color:var(--cream);display:flex;align-items:center;gap:1.6cqw;padding:1.4cqw 2.2cqw;border-bottom:.3cqw solid var(--ink)}
+.L .lbrand{color:var(--cream);font:400 2.6cqw/1 'Archivo Black';letter-spacing:-.01em}
+.L .who{margin-left:auto;font:600 1.3cqw/1 'Archivo';display:flex;align-items:center;gap:1.2cqw}
+.L .who b{background:var(--cream);color:var(--red);padding:.6cqw 1cqw;border-radius:.6cqw;font-weight:800}
+.L .out{border:.2cqw solid var(--cream);padding:.6cqw 1.1cqw;border-radius:.6cqw;font-weight:800}
+.L main{flex:1;padding:2.4cqw 2.6cqw 1.6cqw;display:flex;flex-direction:column}
+.L h1{font:400 3cqw/1 'Archivo Black';margin:0 0 .5cqw}
+.L .sub{font:500 1.45cqw/1.3 'Archivo';color:#5d554b;margin:0 0 2cqw}
+.L .tiles{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:2cqw;flex:1}
+.L .t{background:#fff;border:.22cqw solid var(--ink);border-radius:.9cqw;box-shadow:var(--hs);padding:2cqw 2.2cqw;display:flex;flex-direction:column;justify-content:flex-end;gap:.6cqw;position:relative}
+.L .t .ic{margin-bottom:auto;width:6cqw;height:6cqw;border-radius:.8cqw;display:grid;place-items:center;border:.22cqw solid var(--ink);background:var(--yel)}
+.L .t .ic svg{width:3.2cqw;height:3.2cqw;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.L .t h2{font:400 2.5cqw/1.05 'Archivo Black';margin:0}
+.L .t p{font:500 1.4cqw/1.3 'Archivo';color:#5d554b;margin:0}
+.L .t.main{background:var(--red);color:var(--cream)}
+.L .t.main p{color:#ffe3b0}
+.L .t.main .ic{background:var(--cream)}
+.L .ltag{position:absolute;top:1.4cqw;right:1.4cqw;background:var(--yel);border:.2cqw solid var(--ink);font:800 1cqw/1 'Archivo';padding:.5cqw .8cqw;border-radius:.5cqw;text-transform:uppercase;letter-spacing:.04em}
+.L .t.adm .ic{background:#fff}
+.L .lock{position:absolute;top:1.4cqw;right:1.4cqw;background:#161616;color:var(--cream);font:800 1cqw/1 'Archivo';padding:.5cqw .8cqw;border-radius:.5cqw;text-transform:uppercase;letter-spacing:.04em}
+.L .rem{margin-top:1.6cqw;display:flex;align-items:center;gap:1cqw;font:600 1.4cqw/1 'Archivo'}
+.L .rem i{width:2.2cqw;height:2.2cqw;border:.22cqw solid var(--ink);border-radius:.5cqw;background:#fff;display:grid;place-items:center;font-style:normal;font-weight:800}
+.L .rem small{color:#5d554b;font-weight:500;font-size:1.2cqw;margin-left:.6cqw}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.mini .mk{aspect-ratio:1366/300}
+.bar{width:100%;height:100%;background:#FFF2D9;font-family:'Archivo';display:flex;flex-direction:column}
+.bar .top2{background:#D62828;color:#FFF2D9;display:flex;align-items:center;gap:1.6cqw;padding:1.6cqw 2.2cqw;border-bottom:.3cqw solid #161616}
+.bar .b{font:400 2.6cqw/1 'Archivo Black'}
+.bar .menu{display:flex;align-items:center;gap:.8cqw;background:#FFF2D9;color:#161616;border:.2cqw solid #161616;padding:.8cqw 1.3cqw;border-radius:.6cqw;font:800 1.5cqw/1 'Archivo';box-shadow:.25cqw .25cqw 0 #161616}
+.bar .menu svg{width:1.8cqw;height:1.8cqw;stroke:#161616;fill:none;stroke-width:2.4;stroke-linecap:round}
+.bar .rest{margin-left:auto;font:600 1.4cqw/1 'Archivo';color:#ffe3b0}
+.bar .drop{margin:1.2cqw 2.2cqw;background:#fff;border:.22cqw solid #161616;border-radius:.8cqw;box-shadow:.35cqw .35cqw 0 #161616;width:34cqw;font:700 1.6cqw/1 'Archivo'}
+.bar .drop div{padding:1.1cqw 1.4cqw;border-bottom:.15cqw solid #eadcc4}
+.bar .drop div.on{background:#FFB703}
+.bar .note{font:600 1.5cqw/1.3 'Archivo';color:#5d554b;padding:1.2cqw 2.2cqw}
+</style>
+
+<h2>Tela de início: escolher onde entrar</h2>
+<p class="subtitle">Abrindo o site (ou depois do login), aparece esta tela. Cada pessoa vê só o que pode usar — a Administração só aparece para o admin. Em baixo, a opção de o aparelho já abrir direto na tela escolhida (bom para o PC da TV e o da cozinha).</p>
+
+<div class="wrap">
+  <div class="mk"><div class="L">
+    <div class="top"><div class="lbrand">Nana Lanches</div><div class="who">Olá, <b>admin</b><span class="out">Sair</span></div></div>
+    <main>
+      <h1>Onde você quer entrar?</h1>
+      <p class="sub">Toque em uma tela. Dá para trocar a qualquer momento pelo botão “Telas” no topo.</p>
+      <div class="tiles">
+        <div class="t main"><span class="ltag">PC do balcão</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="9" height="12" rx="1"/><rect x="13" y="4" width="9" height="12" rx="1"/><path d="M6 20h12"/></svg></div><h2>Estação</h2><p>Balcão e cozinha nos dois monitores</p></div>
+        <div class="t"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><h2>Balcão</h2><p>Só lançar e acompanhar pedidos</p></div>
+        <div class="t"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 13h12l-1 7H7z"/><path d="M8 13V9a4 4 0 0 1 8 0v4"/></svg></div><h2>Cozinha</h2><p>Pedidos para preparar e “Pronto”</p></div>
+        <div class="t"><div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1"/><path d="M8 21h8M12 17v4"/></svg></div><h2>Painel da TV</h2><p>Números preparando e prontos</p></div>
+        <div class="t"><div class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div><h2>Acompanhar</h2><p>Tela do cliente no celular (QR)</p></div>
+        <div class="t adm"><span class="lock">Só admin</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 21V10M10 21V4M16 21v-7M22 21H2"/></svg></div><h2>Administração</h2><p>Preços, cardápio, vendas, usuários</p></div>
+      </div>
+      <div class="rem"><i>✓</i>Abrir sempre esta tela neste aparelho<small>(dá para desfazer no botão “Telas”)</small></div>
+    </main>
+  </div></div>
+
+  <div class="mini">
+    <div class="mk"><div class="bar">
+      <div class="top2"><div class="b">Nana Lanches</div><div class="menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Telas</div><div class="rest">Balcão · Online</div></div>
+      <p class="note">Em todas as telas: botão <b>“Telas”</b> no topo para voltar à escolha.</p>
+    </div></div>
+    <div class="mk"><div class="bar">
+      <div class="top2"><div class="b">Nana Lanches</div><div class="menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Telas</div><div class="rest">Cozinha · Online</div></div>
+      <div class="drop"><div class="on">Estação</div><div>Balcão</div><div>Cozinha</div></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="options" style="margin-top:1.5rem">
+  <div class="option" data-choice="lembrar" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content"><h3>Tela de início + “abrir sempre neste aparelho” (recomendo)</h3><p>O PC da TV e o da cozinha ligam e já caem na tela certa; o do balcão escolhe quando quiser.</p></div>
+  </div>
+  <div class="option" data-choice="sempre-escolher" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content"><h3>Só a tela de início, sempre escolhendo</h3><p>Mais simples: toda vez que abrir o site, escolhe a tela.</p></div>
+  </div>
+</div>

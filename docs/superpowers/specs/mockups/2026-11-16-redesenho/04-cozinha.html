@@ -1,0 +1,87 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Archivo+Black&display=swap');
+.n-wrap{background:#d9d6d0;padding:14px;border-radius:12px}
+.n-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.n-cap{font:600 11px/1.3 system-ui;color:#444;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.n-mk{container-type:inline-size;aspect-ratio:1366/768;overflow:hidden;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.18);position:relative}
+.k{--ink:#161616;--red:#D62828;--cream:#FFF2D9;--yel:#FFB703;--ok:#1F8A50;--bw:.2cqw;width:100%;height:100%;background:var(--cream);color:var(--ink);font-family:'Archivo',system-ui;display:flex;flex-direction:column}
+.k-top{background:var(--red);color:var(--cream);display:flex;align-items:center;gap:1.4cqw;padding:1.1cqw 1.8cqw;border-bottom:.3cqw solid var(--ink)}
+.k-top b{font:400 2.4cqw/1 'Archivo Black'}
+.k-top .cnt{background:var(--ink);color:var(--cream);font:800 1.6cqw/1 'Archivo';padding:.5cqw 1cqw;border-radius:.6cqw}
+.k-top .menu{background:var(--cream);color:var(--ink);border:var(--bw) solid var(--ink);padding:.6cqw 1cqw;border-radius:.6cqw;font:800 1.2cqw/1 'Archivo';box-shadow:.2cqw .2cqw 0 var(--ink)}
+.k-top .r{margin-left:auto;display:flex;gap:1.4cqw;align-items:center;font:800 1.8cqw/1 'Archivo'}
+.k-top .r small{font:700 1.15cqw/1 'Archivo';color:#FFE3B0;display:flex;gap:.5cqw;align-items:center}
+.k-top .r small i{width:.9cqw;height:.9cqw;border-radius:50%;background:#7CFFB2}
+.k-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:1.2cqw;padding:1.3cqw 1.6cqw;align-content:start;min-height:0}
+.t{background:#fff;border:var(--bw) solid var(--ink);border-radius:.7cqw;box-shadow:.3cqw .3cqw 0 var(--ink);display:block;position:relative}
+.t header{display:flex;justify-content:space-between;align-items:baseline;padding:1cqw 1.2cqw .3cqw}
+.t header b{font:400 3.1cqw/1 'Archivo Black'}
+.t header em{font:800 1.45cqw/1 'Archivo';font-style:normal;color:#6B6257}
+.t h5{margin:0;padding:0 1.2cqw;font:800 1.75cqw/1.1 'Archivo'}
+.t ul{list-style:none;margin:0;padding:.7cqw 1.2cqw 1cqw;font:600 1.45cqw/1.35 'Archivo'}
+.t ul b{font-weight:800}
+.t ul small{color:var(--red);font-weight:800}
+.t .tag{display:inline-block;font:800 1.1cqw/1 'Archivo';padding:.35cqw .6cqw;border:.15cqw solid var(--ink);border-radius:.4cqw;margin:0 0 .2cqw 1.2cqw;background:#fff}
+.t .go{display:block;background:var(--ok);color:#fff;text-align:center;font:400 1.7cqw/1 'Archivo Black';padding:1.15cqw;border-top:var(--bw) solid var(--ink);border-radius:0 0 .5cqw .5cqw;letter-spacing:.03em}
+.t.new{outline:.55cqw solid var(--yel);outline-offset:.15cqw;animation:pulse 1.2s ease-in-out infinite}
+.t.new header b:after{content:"NOVO";font:800 1.2cqw/1 'Archivo';background:var(--yel);border:.15cqw solid var(--ink);padding:.35cqw .6cqw;border-radius:.4cqw;margin-left:.8cqw;vertical-align:middle}
+@keyframes pulse{50%{outline-color:#ffe08a}}
+.t.warn header em{color:#E8590C}
+.t.late{background:#FFE9E9}
+.t.late header em{color:#fff;background:var(--red);padding:.35cqw .6cqw;border-radius:.4cqw;border:.15cqw solid var(--ink)}
+.k-foot{display:flex;align-items:center;gap:1.4cqw;padding:.9cqw 1.8cqw;background:var(--ink);color:var(--cream);font:700 1.25cqw/1 'Archivo'}
+.k-foot kbd{background:var(--cream);color:var(--ink);border-radius:.4cqw;padding:.3cqw .6cqw;font:800 1.2cqw/1 'Archivo'}
+.k-foot .more{margin-left:auto;background:var(--yel);color:var(--ink);padding:.5cqw 1cqw;border-radius:.5cqw;font-weight:800}
+/* alert overlay */
+.flash{position:absolute;inset:0;background:#FFB703;color:#161616;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.2cqw solid #161616;font-family:'Archivo'}
+.flash p{margin:0;font:400 4.2cqw/1 'Archivo Black';letter-spacing:.02em}
+.flash b{font:400 15cqw/1 'Archivo Black';margin:1cqw 0}
+.flash span{font:800 4.6cqw/1 'Archivo'}
+.flash ul{list-style:none;margin:2cqw 0 0;padding:0;font:700 2.4cqw/1.4 'Archivo';text-align:center}
+.flash .bar{position:absolute;left:0;bottom:0;height:1.4cqw;width:62%;background:#161616}
+.notes{font:500 13px/1.5 system-ui;color:#333;margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.notes b{color:#111}
+</style>
+
+<h2>Cozinha: aviso de pedido novo + grade de pedidos</h2>
+<p class="subtitle">Monitor de 18,5" (1366×768). Sem som — tudo visual. À esquerda o aviso que aparece por 3 segundos quando chega um pedido; à direita como a tela fica depois.</p>
+
+<div class="n-wrap">
+  <div class="n-two">
+    <div>
+      <p class="n-cap">1 · Chegou pedido: a tela da cozinha fica amarela por 3 s</p>
+      <div class="n-mk"><div class="k">
+        <div class="k-top"><b>Cozinha</b><span class="cnt">8</span><span class="menu">☰ Telas</span><div class="r"><small><i></i>Online</small>12:41</div></div>
+        <div class="k-grid"></div>
+      </div>
+        <div class="flash"><p>NOVO PEDIDO</p><b>014</b><span>Maria</span><ul><li>1× Feijoada (sem cebola) · 2× Suco de manga</li></ul><div class="bar"></div></div>
+      </div>
+    </div>
+    <div>
+      <p class="n-cap">2 · Depois: o pedido novo fica piscando com “NOVO” até alguém tocar nele (ou 1 min)</p>
+      <div class="n-mk"><div class="k">
+        <div class="k-top"><b>Cozinha</b><span class="cnt">8</span><span class="menu">☰ Telas</span><div class="r"><small><i></i>Online</small>12:41</div></div>
+        <div class="k-grid">
+          <div class="t late"><header><b>007</b><em>27 min</em></header><h5>Rafa</h5><ul><li><b>1×</b> Coxão mole</li></ul><span class="go">PRONTO</span></div>
+          <div class="t warn"><header><b>009</b><em>18 min</em></header><h5>Carlos</h5><ul><li><b>1×</b> Carne de sol</li><li><b>1×</b> Suco de goiaba</li></ul><span class="go">PRONTO</span></div>
+          <div class="t warn"><header><b>010</b><em>16 min</em></header><h5>Bia</h5><span class="tag">VIAGEM</span><ul><li><b>2×</b> Prato econômico</li></ul><span class="go">PRONTO</span></div>
+          <div class="t"><header><b>011</b><em>9 min</em></header><h5>Ana</h5><ul><li><b>1×</b> Filé de frango</li><li><b>1×</b> Suco de limão</li></ul><span class="go">PRONTO</span></div>
+          <div class="t"><header><b>012</b><em>6 min</em></header><h5>João</h5><ul><li><b>1×</b> Parmegiana de frango</li></ul><span class="go">PRONTO</span></div>
+          <div class="t"><header><b>013</b><em>3 min</em></header><h5>Lu</h5><ul><li><b>1×</b> Omelete especial</li><li><b>1×</b> Suco de manga <small>sem açúcar</small></li></ul><span class="go">PRONTO</span></div>
+          <div class="t new"><header><b>014</b><em>agora</em></header><h5>Maria</h5><ul><li><b>1×</b> Feijoada <small>sem cebola</small></li><li><b>2×</b> Suco de manga</li></ul><span class="go">PRONTO</span></div>
+          <div class="t"><header><b>015</b><em>agora</em></header><h5>Pedro</h5><ul><li><b>1×</b> Filé de peixe</li></ul><span class="go">PRONTO</span></div>
+        </div>
+        <div class="k-foot">Teclado numérico: digite <kbd>14</kbd> e <kbd>Enter</kbd> para marcar pronto<span class="more">+2 pedidos abaixo ↓</span></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="notes">
+    <div><b>O aviso</b> cobre só a metade da cozinha (na Estação o balcão continua livre para digitar). Mostra número, nome e itens em letras gigantes, para quem está no fogão ver de longe. Some sozinho em 3 s; se chegarem dois pedidos juntos, mostra um depois do outro.</div>
+    <div><b>A grade</b> mostra 8 pedidos de uma vez (antes eram 3–4), do mais antigo para o mais novo. Tempo fica <span style="color:#E8590C;font-weight:700">laranja a partir de 15 min</span> e o cartão fica <span style="color:#D62828;font-weight:700">vermelho a partir de 25 min</span>. “Para viagem” e observações aparecem em destaque. Se não couber tudo, aparece “+2 pedidos abaixo”.</div>
+  </div>
+</div>
+
+<div class="options" style="margin-top:1.5rem">
+  <div class="option" data-choice="ok" onclick="toggleSelect(this)"><div class="letter">✓</div><div class="content"><h3>Está bom assim</h3><p>Seguir para a próxima tela.</p></div></div>
+  <div class="option" data-choice="ajustar" onclick="toggleSelect(this)"><div class="letter">✎</div><div class="content"><h3>Quero ajustar</h3><p>Diga no terminal o que mudar (tempo do aviso, cores do atraso, tamanho…).</p></div></div>
+</div>
