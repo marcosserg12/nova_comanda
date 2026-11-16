@@ -10,7 +10,12 @@ export COMPOSER_ALLOW_SUPERUSER=1
 cd "$APP_DIR"
 git pull --ff-only origin main
 composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
-npm ci --no-audit --no-fund
+# O npm do Windows remove do lock dependências opcionais só de Linux/wasm;
+# se o lock vier assim, instala sem gravá-lo (o git pull seguinte continua limpo).
+if ! npm ci --no-audit --no-fund; then
+    echo "package-lock.json fora de sincronia para Linux; usando npm install --no-save" >&2
+    npm install --no-audit --no-fund --no-save
+fi
 npm run build
 $PHP artisan migrate --force
 $PHP artisan optimize
