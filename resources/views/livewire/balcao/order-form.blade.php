@@ -3,7 +3,7 @@
     <div x-data="{ sheet: false, menu: false }"
          @focus-name.window="sheet = false; $nextTick(() => $refs.name?.focus())"
          @edit-order.window="sheet = true"
-         @keydown.escape.window="menu = false"
+         @keydown.escape.window="if (menu) { menu = false; $refs.trigger?.focus() } else { sheet = false }"
          class="relative flex h-full min-h-0 flex-col gap-3 @min-[1024px]/pane:flex-row @min-[1024px]/pane:gap-4">
 
         {{-- Pratos --}}
@@ -19,7 +19,7 @@
                            placeholder="Buscar…" aria-label="Buscar produto"
                            class="min-h-11 w-44 rounded-md border-2 border-nana-ink bg-white px-3 text-base font-semibold placeholder:text-nana-muted max-lg:min-h-12">
                     <div class="relative" @click.outside="menu = false">
-                        <button type="button" @click="menu = ! menu" aria-label="Mais opções" aria-haspopup="menu" :aria-expanded="menu.toString()"
+                        <button type="button" x-ref="trigger" @click="menu = ! menu" aria-label="Mais opções" aria-haspopup="menu" :aria-expanded="menu.toString()"
                                 class="grid size-11 place-items-center rounded-md border-2 border-nana-ink bg-white text-2xl font-extrabold leading-none shadow-hard-sm max-lg:size-12">⋯</button>
                         <div x-show="menu" x-cloak role="menu"
                              class="absolute right-0 top-full z-20 mt-2 w-60 overflow-hidden rounded-lg border-2 border-nana-ink bg-white shadow-hard">

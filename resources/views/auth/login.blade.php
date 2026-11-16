@@ -18,7 +18,7 @@
                        class="mt-1.5 block h-14 w-full rounded-lg border-3 border-nana-ink bg-white px-4 text-xl font-bold">
             </label>
 
-            <label class="mt-5 flex min-h-11 cursor-pointer items-center gap-3 text-lg font-bold">
+            <label class="mt-5 flex min-h-11 max-lg:min-h-12 cursor-pointer items-center gap-3 text-lg font-bold">
                 <input type="checkbox" name="remember" value="1" checked class="size-6 rounded border-3 border-nana-ink text-nana-yellow">
                 Manter conectado neste aparelho
             </label>

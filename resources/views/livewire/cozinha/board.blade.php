@@ -69,13 +69,18 @@
         @endforelse
     </div>
 
-    <footer class="flex shrink-0 items-center gap-3 bg-nana-ink px-4 py-2.5 text-base font-bold text-nana-cream">
-        <span>Teclado numérico: digite <kbd class="rounded bg-nana-cream px-1.5 py-0.5 font-extrabold text-nana-ink">14</kbd> e <kbd class="rounded bg-nana-cream px-1.5 py-0.5 font-extrabold text-nana-ink">Enter</kbd> para marcar pronto</span>
-        <button type="button" data-kitchen-more :data-kitchen-new-below="belowHighlighted" x-show="below > 0" x-cloak tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"
-                class="relative ml-auto rounded-md bg-nana-yellow px-3 py-1 font-extrabold text-nana-ink">
-            <span x-show="belowHighlighted > 0" x-cloak aria-hidden="true" class="nana-highlight pointer-events-none absolute inset-0 rounded-md"></span>
-            <span x-text="belowHighlighted > 0 ? (belowKind === 'updated' ? 'ALTERADO' : 'NOVO') + ' abaixo ↓' : '+' + below + (below === 1 ? ' pedido abaixo ↓' : ' pedidos abaixo ↓')"></span>
+    <footer data-kitchen-footer :data-kitchen-alert="belowHighlighted > 0 ? '1' : '0'"
+            :class="belowHighlighted > 0 ? 'bg-nana-yellow text-nana-ink' : 'bg-nana-ink text-nana-cream'"
+            class="relative flex shrink-0 items-center gap-3 px-4 py-2.5 text-base font-bold">
+        <button type="button" data-kitchen-alert-bar :data-kitchen-new-below="belowHighlighted" x-show="belowHighlighted > 0" x-cloak tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"
+                class="relative flex min-h-12 w-full items-center justify-center text-center font-display text-3xl leading-tight text-nana-ink">
+            <span aria-hidden="true" class="nana-highlight pointer-events-none absolute inset-0 rounded-md" style="outline-offset: -6px"></span>
+            <span x-text="(belowKind === 'updated' ? 'PEDIDO ALTERADO' : 'NOVO PEDIDO') + ' abaixo ↓ — toque para ver'"></span>
         </button>
+        <span x-show="belowHighlighted === 0">Teclado numérico: digite <kbd class="rounded bg-nana-cream px-1.5 py-0.5 font-extrabold text-nana-ink">14</kbd> e <kbd class="rounded bg-nana-cream px-1.5 py-0.5 font-extrabold text-nana-ink">Enter</kbd> para marcar pronto</span>
+        <button type="button" data-kitchen-more :data-kitchen-new-below="belowHighlighted" x-show="below > 0 && belowHighlighted === 0" x-cloak tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"
+                class="ml-auto rounded-md bg-nana-yellow px-3 py-1 font-extrabold text-nana-ink"
+                x-text="'+' + below + (below === 1 ? ' pedido abaixo ↓' : ' pedidos abaixo ↓')"></button>
     </footer>
 
     <div x-show="undoBar" x-cloak

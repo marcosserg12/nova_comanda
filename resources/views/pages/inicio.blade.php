@@ -55,7 +55,7 @@
             </div>
 
             <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-                <label class="flex min-h-11 cursor-pointer flex-wrap items-center gap-3 text-lg font-semibold">
+                <label class="flex min-h-11 max-lg:min-h-12 cursor-pointer flex-wrap items-center gap-3 text-lg font-semibold">
                     <input type="checkbox" x-model="remember" class="size-7 rounded border-2 border-nana-ink text-nana-yellow">
                     Abrir sempre esta tela neste aparelho
                     <small class="text-base font-medium text-nana-muted">(dá para desfazer no botão “Telas”)</small>

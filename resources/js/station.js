@@ -48,6 +48,9 @@ export function registerStation(Alpine) {
             try {
                 const details = await window.getScreenDetails();
                 const screens = [...details.screens].sort((a, b) => a.left - b.left);
+                if (!screens.length || !(screens[0].width >= 800)) {
+                    throw new Error('largura inválida');
+                }
                 this.leftWidth = screens[0].width;
                 storeLeft(screens[0].width);
                 toast('success', screens.length > 1

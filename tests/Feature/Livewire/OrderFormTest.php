@@ -236,3 +236,9 @@ it('shows the number the next order will get, or the number being edited', funct
         ->assertSee('nº 002')
         ->assertSee('Alterando pedido');
 });
+
+it('closes the sheet on Esc and returns focus to the menu trigger', function () {
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSeeHtml('if (menu) { menu = false; $refs.trigger?.focus() } else { sheet = false }')
+        ->assertSeeHtml('x-ref="trigger"');
+});

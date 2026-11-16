@@ -95,3 +95,35 @@ it('serves both public pages to guests', function () {
     $this->get('/painel')->assertOk()->assertSeeLivewire(PublicBoard::class)->assertSee('Toque para começar');
     $this->get('/acompanhar')->assertOk()->assertSeeLivewire(PublicBoard::class)->assertDontSee('Toque para começar');
 });
+
+it('caps the TV ready list at the limit', function () {
+    $dish = kitchenProduct();
+    foreach (range(1, 6) as $index) {
+        app(TransitionOrder::class)->markReady(placeOrder([item($dish)], ['customer_name' => "Cliente{$index}"]));
+    }
+
+    $html = Livewire::test(PublicBoard::class, ['variant' => 'tv'])->html();
+
+    expect(substr_count($html, 'data-tv-ready="'))->toBe(PublicBoard::TV_READY_LIMIT);
+});
+
+it('caps the phone lists and counts the rest', function () {
+    $dish = kitchenProduct();
+    foreach (range(1, 9) as $index) {
+        $order = placeOrder([item($dish)], ['customer_name' => "Pronto{$index}"]);
+        app(TransitionOrder::class)->markReady($order);
+    }
+    foreach (range(1, 8) as $index) {
+        placeOrder([item($dish)], ['customer_name' => "Fila{$index}"]);
+    }
+
+    $html = Livewire::test(PublicBoard::class, ['variant' => 'mobile'])
+        ->assertSeeHtml('data-phone-overflow="ready"')
+        ->assertSeeHtml('data-phone-overflow="preparing"')
+        ->assertSeeHtml('>+3<')
+        ->assertSeeHtml('>+2<')
+        ->assertSeeHtml('inputmode="numeric" pattern="[0-9]*"')
+        ->html();
+
+    expect(substr_count($html, 'data-phone-preparing="'))->toBe(PublicBoard::PHONE_LIST_LIMIT);
+});

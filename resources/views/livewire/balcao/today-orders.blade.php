@@ -52,7 +52,8 @@
     </div>
 
     @if ($cancelingOrderId)
-        <div class="fixed inset-0 z-40 flex items-center justify-center bg-nana-ink/60 p-4">
+        <div x-data x-init="$nextTick(() => $el.querySelector('input[type=radio]')?.focus())" x-on:keydown.escape.window="$wire.closeCancel()"
+             class="fixed inset-0 z-40 flex items-center justify-center bg-nana-ink/60 p-4">
             <div role="dialog" aria-modal="true" aria-labelledby="cancel-title"
                  class="w-full max-w-md rounded-xl border-3 border-nana-ink bg-nana-cream p-6 shadow-[8px_8px_0_var(--color-nana-ink)]">
                 <h3 id="cancel-title" class="font-display text-2xl">Cancelar pedido</h3>

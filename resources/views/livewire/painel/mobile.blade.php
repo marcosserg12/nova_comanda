@@ -13,7 +13,7 @@
 
     <main class="flex flex-col gap-4 p-5">
         <label class="flex items-center justify-between gap-3 rounded-xl border-3 border-nana-ink bg-white px-4 py-2">
-            <input type="tel" inputmode="numeric" maxlength="3" x-model="mine" placeholder="Ex.: 42"
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="3" x-model="mine" @input="mine = $event.target.value.replace(/\D/g, '').slice(0, 3)" placeholder="Ex.: 42"
                    class="min-w-0 flex-1 border-0 p-0 font-display text-3xl placeholder:text-nana-line">
             <span class="shrink-0 text-xs font-extrabold uppercase tracking-wider text-nana-muted">Seu número</span>
         </label>
@@ -38,26 +38,32 @@
         <section>
             <h2 class="font-display text-xl">Prontos</h2>
             <ul class="mt-2 space-y-1 text-lg font-bold text-nana-muted">
-                @forelse ($this->board['ready'] as $entry)
+                @forelse ($this->phoneReady as $entry)
                     <li wire:key="mr-{{ $entry['id'] }}" class="rounded-md px-2 py-1" :class="isMine('{{ $entry['number'] }}') ? 'bg-nana-yellow text-nana-ink' : ''">
                         <span class="mr-2 font-display text-xl text-nana-ink tabular-nums">{{ $entry['number'] }}</span>{{ $entry['first_name'] }} — pronto
                     </li>
                 @empty
                     <li class="px-2 py-1">Nenhum pedido pronto agora.</li>
                 @endforelse
+                @if ($this->phoneReadyOverflow > 0)
+                    <li data-phone-overflow="ready" class="px-2 py-1 font-extrabold text-nana-ink">+{{ $this->phoneReadyOverflow }}</li>
+                @endif
             </ul>
         </section>
 
         <section>
             <h2 class="font-display text-xl">Preparando</h2>
             <ul class="mt-2 space-y-1 text-lg font-bold text-nana-muted">
-                @forelse ($this->board['preparing'] as $entry)
+                @forelse ($this->phonePreparing as $entry)
                     <li wire:key="mp-{{ $entry['id'] }}" data-phone-preparing="{{ $entry['number'] }}" class="rounded-md px-2 py-1" :class="isMine('{{ $entry['number'] }}') ? 'bg-white text-nana-ink' : ''">
                         <span class="mr-2 font-display text-xl text-nana-ink tabular-nums">{{ $entry['number'] }}</span>{{ $entry['first_name'] }} — preparando
                     </li>
                 @empty
                     <li class="px-2 py-1">Nenhum pedido em preparo.</li>
                 @endforelse
+                @if ($this->phonePreparingOverflow > 0)
+                    <li data-phone-overflow="preparing" class="px-2 py-1 font-extrabold text-nana-ink">+{{ $this->phonePreparingOverflow }}</li>
+                @endif
             </ul>
         </section>
     </main>

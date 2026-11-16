@@ -9,6 +9,7 @@ use App\Livewire\Balcao\InKitchenList;
 use App\Livewire\Balcao\TodayOrders;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Event;
+use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -134,7 +135,7 @@ it('rejects an invalid cancel reason', function () {
 
 it('does not let the client set cancelingOrderId', function () {
     Livewire::actingAs($this->user)->test(TodayOrders::class)->set('cancelingOrderId', 1);
-})->throws(\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException::class);
+})->throws(CannotUpdateLockedPropertyException::class);
 
 it('ignores confirmCancel without a selected order', function () {
     $order = placeOrder([item($this->dish)]);
@@ -174,4 +175,17 @@ it('renders today orders as cards with status, waiting time and the right action
         ->assertSee('Cancelar pedido')
         ->assertSee('Cliente desistiu')
         ->assertSeeHtml('role="dialog"');
+});
+
+it('closes the cancel modal on Esc, focuses the first reason and uses 48 px touch targets', function () {
+    $order = placeOrder([item($this->dish)]);
+
+    Livewire::actingAs($this->user)->test(TodayOrders::class)
+        ->call('startCancel', $order->id)
+        ->assertSeeHtml('x-on:keydown.escape.window="$wire.closeCancel()"')
+        ->assertSeeHtml("querySelector('input[type=radio]')?.focus()")
+        ->call('closeCancel')
+        ->assertSet('cancelingOrderId', null);
+
+    Livewire::actingAs($this->user)->test(InKitchenList::class)->assertSeeHtml('max-lg:min-h-12');
 });

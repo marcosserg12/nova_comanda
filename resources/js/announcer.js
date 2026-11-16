@@ -43,9 +43,15 @@ export function registerAnnouncer(Alpine) {
         mine: '',
         ready: [],
         preparing: [],
+        loaded: false,
         init() {
             try { this.mine = localStorage.getItem('nana.mine') || ''; } catch (e) { this.mine = ''; }
             this.$watch('mine', (value) => {
+                const clean = String(value).replace(/\D/g, '').slice(0, 3);
+                if (clean !== value) {
+                    this.mine = clean;
+                    return;
+                }
                 try { localStorage.setItem('nana.mine', value); } catch (e) { /* armazenamento indisponível */ }
             });
         },
@@ -63,11 +69,15 @@ export function registerAnnouncer(Alpine) {
             if (this.ready.includes(this.myNumber)) {
                 return 'ready';
             }
-            return this.preparing.includes(this.myNumber) ? 'preparing' : 'unknown';
+            if (this.preparing.includes(this.myNumber)) {
+                return 'preparing';
+            }
+            return this.loaded ? 'unknown' : 'loading';
         },
         sync(ready, preparing) {
             this.ready = ready;
             this.preparing = preparing;
+            this.loaded = true;
         },
         isMine(number) {
             return this.myNumber !== '' && number === this.myNumber;

@@ -10,7 +10,7 @@
                     <p class="truncate text-sm font-semibold text-nana-muted">{{ $order->customer_name }}</p>
                 </div>
                 <button type="button" wire:click="markReady({{ $order->id }})"
-                        class="min-h-11 shrink-0 rounded-md border-2 border-nana-ink bg-nana-green px-3 text-sm font-extrabold text-white">Pronto</button>
+                        class="min-h-11 max-lg:min-h-12 shrink-0 rounded-md border-2 border-nana-ink bg-nana-green px-3 text-sm font-extrabold text-white">Pronto</button>
             </li>
         @empty
             <li class="py-8 text-center font-semibold text-nana-muted">Nada na cozinha.</li>

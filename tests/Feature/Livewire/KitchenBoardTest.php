@@ -137,13 +137,20 @@ it('refuses guests', function () {
 });
 
 it('flags highlighted cards below the fold on a tappable footer pill', function () {
-    placeOrder([item(kitchenProduct())]);
+    $order = placeOrder([item(kitchenProduct())]);
 
     Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-kitchen-alert-bar')
+        ->assertSeeHtml('NOVO PEDIDO')
+        ->assertSeeHtml('PEDIDO ALTERADO')
+        ->assertSeeHtml('— toque para ver')
+        ->assertSeeHtml("belowHighlighted > 0 ? 'bg-nana-yellow text-nana-ink'")
+        ->assertSeeHtml('x-show="belowHighlighted === 0"')
+        ->assertSeeHtml('data-kitchen-alert-bar :data-kitchen-new-below="belowHighlighted" x-show="belowHighlighted > 0" x-cloak tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"')
         ->assertSeeHtml('data-kitchen-new-below')
         ->assertSeeHtml('scrollToBelow()')
         ->assertSeeHtml('belowHighlighted > 0')
         ->assertSeeHtml('abaixo ↓')
-        ->assertSeeHtml('isHighlighted(1)')
+        ->assertSeeHtml('isHighlighted('.$order->id.')')
         ->assertSeeHtml('tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"');
 });
