@@ -33,7 +33,9 @@ class UserResource extends Resource
         return $schema->components([
             TextInput::make('name')->label('Nome')->required()->maxLength(60),
             TextInput::make('username')->label('Usuário')->required()->maxLength(40)->unique(ignoreRecord: true),
-            Select::make('role')->label('Perfil')->options(Role::options())->required(),
+            Select::make('role')->label('Perfil')->options(Role::options())->required()
+                ->disabled(fn (?User $record) => $record?->is(auth()->user()))
+                ->dehydrated(fn (?User $record) => ! $record?->is(auth()->user())),
             TextInput::make('password')->label('Senha')->password()->revealable()
                 ->minLength(6)
                 ->dehydrated(fn (?string $state) => filled($state))

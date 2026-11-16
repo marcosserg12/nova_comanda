@@ -7,13 +7,15 @@ use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Filament\Resources\Users\Pages\EditUser;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use App\Support\BusinessDay;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(fn () => $this->actingAs(userWithRole(Role::Admin)));
+beforeEach(fn () => $this->actingAs($this->admin = userWithRole(Role::Admin)));
 
 it('lists products with the price in reais', function () {
     $product = kitchenProduct(['name' => 'Carne de sol', 'price_cents' => 3200]);
@@ -55,4 +57,46 @@ it('creates categories and users', function () {
 
     expect(Category::query()->where('name', 'Sobremesas')->exists())->toBeTrue()
         ->and(User::query()->where('username', 'cozinha')->sole()->role)->toBe(Role::Cozinha);
+});
+
+it('updates the price inline in reais', function () {
+    $product = kitchenProduct(['price_cents' => 2400]);
+
+    livewire(ListProducts::class)->call('updateTableColumnState', 'price', (string) $product->getKey(), '24,50');
+
+    expect($product->fresh()->price_cents)->toBe(2450);
+});
+
+it('rejects an invalid inline price', function () {
+    $product = kitchenProduct(['price_cents' => 2400]);
+
+    livewire(ListProducts::class)->call('updateTableColumnState', 'price', (string) $product->getKey(), 'abc');
+
+    expect($product->fresh()->price_cents)->toBe(2400);
+});
+
+it('toggles sold out today inline', function () {
+    $product = kitchenProduct();
+
+    livewire(ListProducts::class)->call('updateTableColumnState', 'sold_out_today', (string) $product->getKey(), true);
+    expect($product->fresh()->isSoldOut())->toBeTrue()
+        ->and($product->fresh()->sold_out_date->toDateString())->toBe(BusinessDay::todayString());
+
+    livewire(ListProducts::class)->call('updateTableColumnState', 'sold_out_today', (string) $product->getKey(), false);
+    expect($product->fresh()->isSoldOut())->toBeFalse()
+        ->and($product->fresh()->sold_out_date)->toBeNull();
+});
+
+it('keeps the admin role when an admin edits themselves, but lets other roles be edited', function () {
+    livewire(EditUser::class, ['record' => $this->admin->getRouteKey()])
+        ->fillForm(['name' => 'Novo Nome', 'role' => 'balcao'])
+        ->call('save')->assertHasNoFormErrors();
+
+    expect($this->admin->fresh()->role)->toBe(Role::Admin)->and($this->admin->fresh()->name)->toBe('Novo Nome');
+
+    $other = userWithRole(Role::Balcao);
+    livewire(EditUser::class, ['record' => $other->getRouteKey()])
+        ->fillForm(['role' => 'cozinha'])->call('save')->assertHasNoFormErrors();
+
+    expect($other->fresh()->role)->toBe(Role::Cozinha);
 });
