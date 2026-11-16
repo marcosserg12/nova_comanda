@@ -56,8 +56,10 @@ class Board extends Component
     #[On('echo-private:pedidos,OrdersChanged')]
     public function onOrdersChanged(array $payload = []): void
     {
-        if (in_array($payload['kind'] ?? null, ['created', 'updated'], true)) {
-            $this->dispatch('kitchen-beep');
+        $kind = $payload['kind'] ?? null;
+
+        if (in_array($kind, ['created', 'updated'], true)) {
+            $this->dispatch('kitchen-highlight', orderId: (int) ($payload['orderId'] ?? 0), kind: $kind);
         }
     }
 
@@ -66,6 +68,9 @@ class Board extends Component
 
     public function render(): View
     {
-        return view('livewire.cozinha.board');
+        return view('livewire.cozinha.board', [
+            'warnMinutes' => (int) config('comanda.kitchen_warn_minutes'),
+            'lateMinutes' => (int) config('comanda.kitchen_late_minutes'),
+        ]);
     }
 }

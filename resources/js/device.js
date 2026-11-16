@@ -1,5 +1,6 @@
 let audioCtx = null;
 let wakeLock = null;
+let keepingAwake = false;
 
 export function audio() {
     if (!audioCtx) {
@@ -22,6 +23,7 @@ function tone(freq, start, duration, volume = 0.3) {
     osc.stop(ctx.currentTime + start + duration + 0.05);
 }
 
+/** Short confirmation sound of the TV "Toque para começar" gate. */
 export function beep() {
     tone(880, 0, 0.18);
     tone(880, 0.25, 0.18);
@@ -33,9 +35,9 @@ export function chime() {
     tone(1320, 0.6, 0.6, 0.4);
 }
 
-async function requestWakeLock() {
+export async function requestWakeLock() {
     try {
-        if ('wakeLock' in navigator) {
+        if ('wakeLock' in navigator && document.visibilityState === 'visible') {
             wakeLock = await navigator.wakeLock.request('screen');
         }
     } catch (e) {
@@ -43,25 +45,34 @@ async function requestWakeLock() {
     }
 }
 
+/** Keeps the screen on: asks now and again whenever the page becomes visible. Needs no user gesture. */
+export function keepScreenAwake() {
+    if (keepingAwake) {
+        return;
+    }
+    keepingAwake = true;
+    requestWakeLock();
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    });
+}
+
 export function registerDevice(Alpine) {
     Alpine.data('deviceGate', (fullscreen = false) => ({
         open: true,
         init() {
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && !this.open) {
-                    requestWakeLock();
-                }
-            });
             // Fully Kiosk / Chrome com autoplay liberado: o áudio já nasce destravado.
             if (audio().state === 'running') {
-                requestWakeLock();
+                keepScreenAwake();
                 this.open = false;
             }
         },
         async start() {
             await audio().resume();
             beep();
-            await requestWakeLock();
+            keepScreenAwake();
             if (fullscreen && document.documentElement.requestFullscreen) {
                 try {
                     await document.documentElement.requestFullscreen();

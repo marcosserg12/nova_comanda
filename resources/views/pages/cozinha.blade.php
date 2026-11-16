@@ -1,4 +1,3 @@
-<x-layouts.app title="Cozinha" body-class="bg-stone-900 overflow-hidden">
-    <x-device-gate />
-    <div class="h-screen"><livewire:cozinha.board /></div>
+<x-layouts.app title="Cozinha" body-class="bg-nana-cream overflow-hidden">
+    <div class="h-dvh"><livewire:cozinha.board /></div>
 </x-layouts.app>

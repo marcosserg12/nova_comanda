@@ -1,11 +1,11 @@
 <?php
 
+use App\Actions\Orders\UpdateOrderItems;
 use App\Enums\OrderStatus;
 use App\Enums\Role;
 use App\Events\BoardChanged;
 use App\Events\OrdersChanged;
 use App\Livewire\Cozinha\Board;
-use App\Actions\Orders\UpdateOrderItems;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -27,6 +27,14 @@ it('shows only kitchen items with notes, takeaway and edited flags', function ()
         ->assertSee('Filé de peixe')->assertSee('Sem arroz')
         ->assertSee('VIAGEM')->assertSee('ALTERADO')
         ->assertDontSee('Guaraná lata');
+});
+
+it('tags only takeaway orders with VIAGEM', function () {
+    placeOrder([item(kitchenProduct())], ['customer_name' => 'Lia', 'takeaway' => false]);
+
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSee('Lia')
+        ->assertDontSee('VIAGEM');
 });
 
 it('marks ready by id and by typed number', function () {
@@ -55,12 +63,71 @@ it('lets the kitchen undo only inside the window', function () {
     $component->call('undoReady', $order->id)->assertForbidden();
 });
 
-it('beeps for new and edited orders only', function () {
+it('highlights new and edited orders', function (string $kind) {
     Livewire::actingAs($this->cozinha)->test(Board::class)
-        ->call('onOrdersChanged', ['orderId' => 1, 'kind' => 'created'])->assertDispatched('kitchen-beep');
+        ->call('onOrdersChanged', ['orderId' => 5, 'kind' => $kind])
+        ->assertDispatched('kitchen-highlight', orderId: 5, kind: $kind);
+})->with(['created', 'updated']);
+
+it('does not highlight other changes', function (string $kind) {
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->call('onOrdersChanged', ['orderId' => 5, 'kind' => $kind])
+        ->assertNotDispatched('kitchen-highlight');
+})->with(['ready', 'unready', 'delivered', 'canceled']);
+
+it('turns the time orange at the warn limit and the card pink at the late limit', function () {
+    placeOrder([item(kitchenProduct())], ['customer_name' => 'Rafa']);
+
+    $this->travel(14)->minutes();
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-kitchen-state="ok"')
+        ->assertSee('14 min');
+
+    $this->travel(1)->minutes();
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-kitchen-state="warn"')
+        ->assertSeeHtml('text-nana-orange');
+
+    $this->travel(10)->minutes();
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-kitchen-state="late"')
+        ->assertSeeHtml('bg-[#FFE9E9]')
+        ->assertSee('25 min');
+});
+
+it('reads the lateness limits from config', function () {
+    config(['comanda.kitchen_warn_minutes' => 5, 'comanda.kitchen_late_minutes' => 8]);
+    placeOrder([item(kitchenProduct())]);
+
+    $this->travel(6)->minutes();
+    Livewire::actingAs($this->cozinha)->test(Board::class)->assertSeeHtml('data-kitchen-state="warn"');
+
+    $this->travel(2)->minutes();
+    Livewire::actingAs($this->cozinha)->test(Board::class)->assertSeeHtml('data-kitchen-state="late"');
+});
+
+it('says "agora" for a brand new order and shows the numpad hint', function () {
+    placeOrder([item(kitchenProduct())]);
 
     Livewire::actingAs($this->cozinha)->test(Board::class)
-        ->call('onOrdersChanged', ['orderId' => 1, 'kind' => 'ready'])->assertNotDispatched('kitchen-beep');
+        ->assertSee('agora')
+        ->assertSee('para marcar pronto')
+        ->assertSeeHtml('data-kitchen-grid')
+        ->assertSeeHtml('data-ready-button')
+        ->assertSeeHtml('tabindex="-1" @pointerdown.prevent @mousedown.prevent');
+});
+
+it('has no kitchen sound left', function () {
+    expect(file_get_contents(app_path('Livewire/Cozinha/Board.php')))->not->toContain('kitchen-beep')
+        ->and(file_get_contents(resource_path('views/livewire/cozinha/board.blade.php')))->not->toContain('beep')
+        ->and(file_get_contents(resource_path('js/kitchen.js')))->not->toContain('beep');
+});
+
+it('opens the kitchen page without the start gate', function () {
+    $this->actingAs($this->cozinha)->get('/cozinha')
+        ->assertOk()
+        ->assertSeeLivewire(Board::class)
+        ->assertDontSee('Toque para começar');
 });
 
 it('refuses guests', function () {
