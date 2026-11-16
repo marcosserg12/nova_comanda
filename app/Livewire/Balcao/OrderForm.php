@@ -139,11 +139,11 @@ class OrderForm extends Component
         }
 
         $same = collect($this->lines)->search(
-            fn (array $line) => $line['product_id'] === $product->id && $line['chips'] === [] && trim($line['note']) === ''
+            fn (array $line) => $line['product_id'] === $product->id && $line['chips'] === [] && trim($line['note']) === '' && $line['quantity'] < 20
         );
 
         if ($same !== false) {
-            $this->lines[$same]['quantity'] = min(20, $this->lines[$same]['quantity'] + 1);
+            $this->lines[$same]['quantity']++;
             $this->search = '';
             $this->resetErrorBag('lines');
 
@@ -398,22 +398,30 @@ class OrderForm extends Component
     }
 
     /**
-     * Identical lines (same product and same composed note) become one, capped at 20 per line.
+     * Identical lines (same product and same composed note) become one. A merged line never
+     * exceeds 20: when it would, the extra quantity starts a new line, so nothing is dropped.
      *
      * @return list<array{item_id: int|null, product_id: int, quantity: int, notes: ?string}>
      */
     private function mergedItems(): array
     {
         $merged = [];
+        $openBucket = [];
 
         foreach ($this->lines as $line) {
             $notes = $this->composeNotes($line);
-            $key = $line['product_id'] > 0 ? $line['product_id'].'|'.$notes : 'item'.($line['item_id'] ?? $line['key']);
+            $base = $line['product_id'] > 0 ? $line['product_id'].'|'.$notes : 'item'.($line['item_id'] ?? $line['key']);
+            $key = $openBucket[$base] ?? $base;
 
-            if (isset($merged[$key])) {
-                $merged[$key]['quantity'] = min(20, $merged[$key]['quantity'] + $line['quantity']);
+            if (isset($merged[$key]) && $merged[$key]['quantity'] + $line['quantity'] <= 20) {
+                $merged[$key]['quantity'] += $line['quantity'];
 
                 continue;
+            }
+
+            if (isset($merged[$key])) {
+                $key = $base.'#'.count($merged);
+                $openBucket[$base] = $key;
             }
 
             $merged[$key] = [

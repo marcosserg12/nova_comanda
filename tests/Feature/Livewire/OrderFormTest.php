@@ -380,3 +380,35 @@ it('shows Laravel validation messages in Portuguese with friendly field names', 
         ->assertHasErrors(['customerName' => 'max'])
         ->assertSee('O campo nome do cliente deve ter no máximo 60 caracteres.');
 });
+
+it('never drops quantity when merging identical lines past 20', function () {
+    $dish = kitchenProduct(['price_cents' => 2400]);
+
+    $component = Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id);
+    $component->call('toggleChip', $component->get('lines')[0]['key'], 'Sem arroz')
+        ->set('lines.0.quantity', 15)
+        ->call('addProduct', $dish->id);
+    $component->call('toggleChip', $component->get('lines')[1]['key'], 'Sem arroz')
+        ->set('lines.1.quantity', 15)
+        ->set('customerName', 'Maria')
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    $items = Order::query()->sole()->items;
+    expect($items->sum('quantity'))->toBe(30)
+        ->and($items->max('quantity'))->toBeLessThanOrEqual(20)
+        ->and($items->pluck('notes')->unique()->all())->toBe(['Sem arroz']);
+});
+
+it('starts a new line instead of capping when a plain line is already at 20', function () {
+    $dish = kitchenProduct();
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id)
+        ->set('lines.0.quantity', 20)
+        ->call('addProduct', $dish->id)
+        ->assertCount('lines', 2)
+        ->assertSet('lines.0.quantity', 20)
+        ->assertSet('lines.1.quantity', 1);
+});
