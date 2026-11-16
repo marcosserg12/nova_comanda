@@ -68,3 +68,44 @@ it('cancels with a reason and keeps the order in history', function () {
 it('requires a cancel reason', function () {
     $this->actions->cancel($this->order, '   ');
 })->throws(ValidationException::class);
+
+it('does not broadcast or change anything on no-op transitions', function () {
+    $delivered = $this->actions->markDelivered($this->order);
+    expect($delivered->status)->toBe(OrderStatus::Preparing);
+
+    $this->actions->cancel($this->order, 'Cliente desistiu');
+    Event::fake([OrdersChanged::class, BoardChanged::class]);
+
+    $again = $this->actions->cancel($this->order, 'Outro motivo');
+
+    expect($again->status)->toBe(OrderStatus::Canceled)
+        ->and($again->cancel_reason)->toBe('Cliente desistiu');
+    Event::assertNotDispatched(OrdersChanged::class);
+    Event::assertNotDispatched(BoardChanged::class);
+});
+
+it('does not broadcast a delivery attempt on a preparing order', function () {
+    $this->actions->markDelivered($this->order);
+
+    Event::assertDispatchedTimes(OrdersChanged::class, 1); // only created
+});
+
+it('cancels a ready order and stores the reason', function () {
+    $this->actions->markReady($this->order);
+
+    $canceled = $this->actions->cancel($this->order, 'Pedido errado');
+
+    expect($canceled->status)->toBe(OrderStatus::Canceled)
+        ->and($canceled->cancel_reason)->toBe('Pedido errado');
+});
+
+it('rejects a cancel reason longer than 120 characters', function () {
+    try {
+        $this->actions->cancel($this->order, str_repeat('a', 121));
+        $this->fail('Expected ValidationException');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('cancelReason');
+    }
+
+    expect($this->order->fresh()->status)->toBe(OrderStatus::Preparing);
+});

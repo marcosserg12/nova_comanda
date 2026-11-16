@@ -50,3 +50,26 @@ it('delivers the order when no kitchen item is left', function () {
 
     expect($updated->status)->toBe(OrderStatus::Delivered);
 });
+
+it('leaves items and total untouched when the edit is refused', function () {
+    $dish = kitchenProduct(['price_cents' => 2400]);
+    $other = kitchenProduct(['price_cents' => 500]);
+    $order = placeOrder([item($dish)]);
+    app(TransitionOrder::class)->markReady($order);
+    $names = $order->fresh(['items'])->items->pluck('product_name')->all();
+
+    try {
+        app(UpdateOrderItems::class)->handle($order, [
+            'customer_name' => 'X', 'takeaway' => false, 'items' => [item($other, 3)],
+        ]);
+        $this->fail('Expected ValidationException');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('order');
+    }
+
+    $fresh = $order->fresh(['items']);
+    expect($fresh->items)->toHaveCount(1)
+        ->and($fresh->items->pluck('product_name')->all())->toBe($names)
+        ->and($fresh->total_cents)->toBe(2400)
+        ->and($fresh->edited_at)->toBeNull();
+});
