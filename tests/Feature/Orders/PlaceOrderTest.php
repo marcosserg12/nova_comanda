@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Orders\PlaceOrder;
 use App\Enums\OrderSource;
 use App\Enums\OrderStatus;
 use App\Enums\Role;
@@ -55,8 +56,8 @@ it('returns the existing order when the same uuid is sent twice', function () {
     $dish = kitchenProduct();
     $input = orderInput([item($dish)]);
 
-    $first = app(\App\Actions\Orders\PlaceOrder::class)->handle($input);
-    $second = app(\App\Actions\Orders\PlaceOrder::class)->handle($input);
+    $first = app(PlaceOrder::class)->handle($input);
+    $second = app(PlaceOrder::class)->handle($input);
 
     expect($second->id)->toBe($first->id)->and(Order::query()->count())->toBe(1);
 });
