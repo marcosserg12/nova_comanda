@@ -5799,7 +5799,7 @@ Run, using `REVERB_APP_KEY` from the server's `.env`:
 
 ```bash
 KEY=$(ssh root@145.223.26.225 "grep ^REVERB_APP_KEY= /var/www/comanda/.env | cut -d= -f2")
-curl -s -o /dev/null -w "%{http_code}\n" --http1.1 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: SGVsbG8sIHdvcmxkIQ==" "https://comanda.mswebsolutions.site/app/${KEY}" --max-time 5
+curl -s -o /dev/null -w "%{http_code}\n" --http1.1 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" "https://comanda.mswebsolutions.site/app/${KEY}" --max-time 5
 ```
 Expected: `101`.
 
