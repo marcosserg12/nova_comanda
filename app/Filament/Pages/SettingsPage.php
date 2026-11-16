@@ -6,6 +6,7 @@ use App\Models\Setting;
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Validator;
 
 class SettingsPage extends Page
 {
@@ -21,13 +22,13 @@ class SettingsPage extends Page
 
     protected string $view = 'filament.pages.settings';
 
-    public int $readyMinutes = 5;
+    public ?int $readyMinutes = 5;
 
     public string $restaurantName = '';
 
-    public int $stationLeftWidth = 1920;
+    public ?int $stationLeftWidth = 1920;
 
-    public int $stationRightWidth = 1920;
+    public ?int $stationRightWidth = 1920;
 
     public function mount(): void
     {
@@ -39,12 +40,19 @@ class SettingsPage extends Page
 
     public function save(): void
     {
-        $this->validate([
+        // Validates the property values explicitly: an emptied number input arrives as null
+        // and must be rejected ("required") instead of being saved.
+        Validator::make([
+            'readyMinutes' => $this->readyMinutes,
+            'restaurantName' => $this->restaurantName,
+            'stationLeftWidth' => $this->stationLeftWidth,
+            'stationRightWidth' => $this->stationRightWidth,
+        ], [
             'readyMinutes' => ['required', 'integer', 'min:1', 'max:60'],
             'restaurantName' => ['required', 'string', 'max:60'],
             'stationLeftWidth' => ['required', 'integer', 'min:800', 'max:7680'],
             'stationRightWidth' => ['required', 'integer', 'min:600', 'max:7680'],
-        ]);
+        ])->validate();
 
         Setting::put(Setting::READY_MINUTES, $this->readyMinutes);
         Setting::put(Setting::RESTAURANT_NAME, $this->restaurantName);

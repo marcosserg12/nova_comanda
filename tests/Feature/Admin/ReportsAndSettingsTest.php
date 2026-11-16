@@ -46,3 +46,18 @@ it('saves the settings', function () {
 it('validates settings', function () {
     livewire(SettingsPage::class)->set('readyMinutes', 0)->call('save')->assertHasErrors('readyMinutes');
 });
+
+it('survives an emptied number field without crashing or saving it', function () {
+    livewire(SettingsPage::class)
+        ->set('readyMinutes', '')
+        ->set('stationLeftWidth', '')
+        ->call('save')
+        ->assertOk();
+
+    expect((int) Setting::get(Setting::READY_MINUTES))->toBe(5)
+        ->and((int) Setting::get(Setting::STATION_LEFT_WIDTH))->toBe(1920);
+});
+
+it('titles the order history in pt-BR sentence case', function () {
+    $this->get('/admin/orders')->assertOk()->assertSee('Histórico de pedidos')->assertDontSee('Histórico De Pedidos');
+});

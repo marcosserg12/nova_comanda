@@ -33,6 +33,9 @@ class OrderResource extends Resource
 
     protected static ?string $navigationLabel = 'Histórico';
 
+    // Filament headline-cases the plural label in the breadcrumb; pt-BR uses sentence case.
+    protected static ?string $breadcrumb = 'Histórico de pedidos';
+
     protected static ?int $navigationSort = 5;
 
     public static function canCreate(): bool
