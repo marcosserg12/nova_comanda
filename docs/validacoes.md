@@ -30,3 +30,25 @@ Observações:
 
 ## 4. DNS
 `comanda.mswebsolutions.site` → `145.223.26.225` (confirmado em 2026-11-13; certificado Let's Encrypt emitido em 2026-11-16).
+
+## 5. Redesenho das telas (Task 8 do plano do redesenho, data: 2026-11-16)
+
+Varredura com `node tests/Browser/screenshots.cjs` (Chromium automatizado, servidor e Reverb locais). Em cada tamanho: sem rolagem horizontal (`scrollWidth <= innerWidth`) e elementos-chave inteiros na tela (botão Enviar e total do balcão, último prato alcançável, botões PRONTO dos cartões visíveis e rodapé "+N pedidos abaixo" da cozinha, blocos da tela de início, números e QR da TV, campo "Seu número" do celular). Capturas em `storage/app/screenshots/` (não versionadas).
+
+| Tela e tamanho | Resultado |
+|---|---|
+| Início 1366×768 | OK |
+| Login 1366×768 | OK |
+| Balcão 1366×768 | OK |
+| Balcão 1280×800 (tablet deitado) | OK |
+| Balcão 800×1280 (tablet em pé) | OK |
+| Cozinha 1366×768 | OK |
+| Cozinha: destaque na borda e aviso no rodapé 1366×768 | OK |
+| Estação 2×1366×768 | OK |
+| Painel da TV 1920×1080 | OK |
+| Celular 390×844 | OK |
+
+Correções feitas durante a varredura:
+- nenhuma (a varredura passou de primeira; os ajustes finais A1–A6 foram feitos antes, no commit "ajustes finais do redesenho").
+
+Pendente na loja (dono): leitura da cozinha a ~2 m, toque no tablet (se houver) e "Detectar monitores" com os dois monitores reais.
