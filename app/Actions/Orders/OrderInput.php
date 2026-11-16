@@ -11,6 +11,7 @@ final class OrderInput
             'customer_name' => ['required', 'string', 'max:60'],
             'takeaway' => ['boolean'],
             'items' => ['required', 'array', 'min:1', 'max:30'],
+            'items.*.item_id' => ['nullable', 'integer'],
             'items.*.product_id' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:20'],
             'items.*.notes' => ['nullable', 'string', 'max:255'],

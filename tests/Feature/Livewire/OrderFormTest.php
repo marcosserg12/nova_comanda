@@ -242,3 +242,130 @@ it('closes the sheet on Esc and returns focus to the menu trigger', function () 
         ->assertSeeHtml('if (menu) { menu = false; $refs.trigger?.focus() } else { sheet = false }')
         ->assertSeeHtml('x-ref="trigger"');
 });
+
+it('turns the same dish tapped twice into one line and one order item', function () {
+    $dish = kitchenProduct(['price_cents' => 2400]);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id)
+        ->call('addProduct', $dish->id)
+        ->assertCount('lines', 1)
+        ->assertSet('lines.0.quantity', 2)
+        ->set('customerName', 'Maria')
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    $items = Order::query()->sole()->items;
+    expect($items)->toHaveCount(1)->and($items->first()->quantity)->toBe(2);
+});
+
+it('merges identical lines on submit and keeps different notes apart', function () {
+    $dish = kitchenProduct(['price_cents' => 2400]);
+
+    $component = Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id);
+    $component->call('toggleChip', $component->get('lines')[0]['key'], 'Sem arroz')
+        ->call('addProduct', $dish->id)
+        ->call('addProduct', $dish->id);
+    $component->call('toggleChip', $component->get('lines')[1]['key'], 'Sem arroz')
+        ->call('addProduct', $dish->id)
+        ->set('lines.2.note', 'bem passado')
+        ->assertCount('lines', 3)
+        ->set('customerName', 'Maria')
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    $items = Order::query()->sole()->items->sortBy('position')->values();
+    expect($items)->toHaveCount(2)
+        ->and($items[0]->notes)->toBe('Sem arroz')->and($items[0]->quantity)->toBe(3)
+        ->and($items[1]->notes)->toBe('bem passado')->and($items[1]->quantity)->toBe(1);
+});
+
+it('does not announce success when a resent uuid carries different items', function () {
+    $dish = kitchenProduct();
+    $juice = kitchenProduct();
+
+    $component = Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id)
+        ->set('customerName', 'Maria');
+    placeOrder([item($dish)], ['uuid' => $component->get('uuid')], $this->user);
+
+    $component->call('addProduct', $juice->id)
+        ->call('submit')
+        ->assertDispatched('toast', type: 'error', message: 'Este pedido já foi enviado como Nº 001. Para mudar, use Editar em Pedidos de hoje.')
+        ->assertNotDispatched('draft-clear')
+        ->assertCount('lines', 2);
+
+    expect(Order::query()->count())->toBe(1);
+});
+
+it('keeps today success behavior when a resent uuid carries the same items', function () {
+    $dish = kitchenProduct();
+
+    $component = Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id)
+        ->set('customerName', 'Maria');
+    placeOrder([item($dish)], ['uuid' => $component->get('uuid')], $this->user);
+
+    $component->call('submit')
+        ->assertDispatched('toast', type: 'success', message: 'Pedido 001 enviado!')
+        ->assertSet('lines', []);
+});
+
+it('refuses to load another order while editing one', function () {
+    $dish = kitchenProduct();
+    $first = placeOrder([item($dish)], ['customer_name' => 'João'], $this->user);
+    $second = placeOrder([item($dish)], ['customer_name' => 'Ana'], $this->user);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->dispatch('edit-order', orderId: $first->id)
+        ->dispatch('edit-order', orderId: $second->id)
+        ->assertSet('editingOrderId', $first->id)
+        ->assertSet('customerName', 'João')
+        ->assertDispatched('toast', type: 'error', message: 'Termine ou cancele a edição atual antes de editar outro pedido.');
+});
+
+it('does nothing on Enter in an empty search box', function () {
+    $dish = kitchenProduct();
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->set('categoryId', $dish->category_id)
+        ->call('addFirstSearchResult')
+        ->assertCount('lines', 0);
+});
+
+it('toggles sold out on the first result with Enter in sold out mode', function () {
+    $dish = kitchenProduct(['name' => 'Filé de frango']);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('toggleSoldOutMode')
+        ->set('search', 'Filé')
+        ->call('addFirstSearchResult')
+        ->assertCount('lines', 0);
+
+    expect($dish->fresh()->isSoldOut())->toBeTrue();
+});
+
+it('adds the first search result with Enter outside sold out mode', function () {
+    kitchenProduct(['name' => 'Filé de frango']);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->set('search', 'Filé')
+        ->call('addFirstSearchResult')
+        ->assertCount('lines', 1);
+});
+
+it('saves an edit of an order whose dish sold out and whose price changed', function () {
+    $dish = kitchenProduct(['price_cents' => 2400]);
+    $order = placeOrder([item($dish)], ['customer_name' => 'João'], $this->user);
+    $dish->update(['price_cents' => 3000]);
+    $dish->toggleSoldOut();
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->dispatch('edit-order', orderId: $order->id)
+        ->set('takeaway', true)
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    expect($order->fresh()->total_cents)->toBe(2400)->and($order->fresh()->takeaway)->toBeTrue();
+});

@@ -16,14 +16,16 @@ final class UpdateOrderItems
     public function handle(Order $order, array $input): Order
     {
         $data = Validator::make($input, OrderInput::rules(), OrderInput::messages())->validate();
-        $built = $this->builder->handle($data['items']);
 
-        $kind = DB::transaction(function () use ($order, $data, $built) {
+        $kind = DB::transaction(function () use ($order, $data) {
             $locked = Order::query()->whereKey($order->getKey())->lockForUpdate()->firstOrFail();
 
             if ($locked->status !== OrderStatus::Preparing) {
                 throw ValidationException::withMessages(['order' => 'Este pedido não pode mais ser alterado.']);
             }
+
+            // Lines already in the order keep their ordered name, price and destination; only new products are validated.
+            $built = $this->builder->handle($data['items'], $locked->items()->get());
 
             $locked->items()->delete();
             $locked->items()->createMany($built['items']);

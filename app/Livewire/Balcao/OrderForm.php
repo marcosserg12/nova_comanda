@@ -29,7 +29,7 @@ class OrderForm extends Component
 
     public bool $takeaway = false;
 
-    /** @var list<array{key: string, product_id: int, category_id: int, name: string, unit_price_cents: int, quantity: int, chips: list<string>, note: string}> */
+    /** @var list<array{key: string, item_id?: int|null, product_id: int, category_id: int, name: string, unit_price_cents: int, quantity: int, chips: list<string>, note: string}> */
     public array $lines = [];
 
     public ?int $categoryId = null;
@@ -138,8 +138,21 @@ class OrderForm extends Component
             return;
         }
 
+        $same = collect($this->lines)->search(
+            fn (array $line) => $line['product_id'] === $product->id && $line['chips'] === [] && trim($line['note']) === ''
+        );
+
+        if ($same !== false) {
+            $this->lines[$same]['quantity'] = min(20, $this->lines[$same]['quantity'] + 1);
+            $this->search = '';
+            $this->resetErrorBag('lines');
+
+            return;
+        }
+
         $this->lines[] = [
             'key' => (string) Str::ulid(),
+            'item_id' => null,
             'product_id' => $product->id,
             'category_id' => $product->category_id,
             'name' => $product->displayName(),
@@ -154,11 +167,23 @@ class OrderForm extends Component
 
     public function addFirstSearchResult(): void
     {
+        if (trim($this->search) === '') {
+            return;
+        }
+
         $first = $this->products->first();
 
-        if ($first !== null) {
-            $this->addProduct($first->id);
+        if ($first === null) {
+            return;
         }
+
+        if ($this->soldOutMode) {
+            $this->toggleSoldOut($first->id);
+
+            return;
+        }
+
+        $this->addProduct($first->id);
     }
 
     public function editDailyName(int $productId): void
@@ -241,11 +266,7 @@ class OrderForm extends Component
             'uuid' => $this->uuid,
             'customer_name' => trim($this->customerName),
             'takeaway' => $this->takeaway,
-            'items' => array_map(fn (array $line) => [
-                'product_id' => $line['product_id'],
-                'quantity' => $line['quantity'],
-                'notes' => $this->composeNotes($line),
-            ], $this->lines),
+            'items' => $this->mergedItems(),
         ];
 
         if ($this->editingOrderId !== null) {
@@ -254,6 +275,13 @@ class OrderForm extends Component
             $message = "Pedido {$order->displayNumber()} alterado!";
         } else {
             $order = app(PlaceOrder::class)->handle($payload, auth()->user());
+
+            if (! $order->wasRecentlyCreated && $this->itemsSignature($order->items->map->only(['product_id', 'quantity', 'notes'])->all()) !== $this->itemsSignature($payload['items'])) {
+                $this->dispatch('toast', type: 'error', message: "Este pedido já foi enviado como Nº {$order->displayNumber()}. Para mudar, use Editar em Pedidos de hoje.");
+
+                return;
+            }
+
             $message = "Pedido {$order->displayNumber()} enviado!";
         }
 
@@ -267,6 +295,12 @@ class OrderForm extends Component
     public function loadOrder(int $orderId): void
     {
         Gate::authorize('manage-orders');
+
+        if ($this->editingOrderId !== null && $this->editingOrderId !== $orderId) {
+            $this->dispatch('toast', type: 'error', message: 'Termine ou cancele a edição atual antes de editar outro pedido.');
+
+            return;
+        }
 
         if ($this->editingOrderId === null && $this->lines !== []) {
             $this->dispatch('toast', type: 'error', message: 'Termine ou limpe o pedido atual antes de editar outro.');
@@ -293,6 +327,7 @@ class OrderForm extends Component
 
             return [
                 'key' => (string) Str::ulid(),
+                'item_id' => $item->id,
                 'product_id' => (int) $item->product_id,
                 'category_id' => (int) ($item->product?->category_id ?? 0),
                 'name' => $item->name_snapshot,
@@ -326,6 +361,7 @@ class OrderForm extends Component
 
             $lines[] = [
                 'key' => (string) Str::ulid(),
+                'item_id' => null,
                 'product_id' => $product->id,
                 'category_id' => $product->category_id,
                 'name' => $product->displayName(),
@@ -359,6 +395,45 @@ class OrderForm extends Component
     private function updateLine(string $key, callable $change): void
     {
         $this->lines = array_map(fn (array $line) => $line['key'] === $key ? $change($line) : $line, $this->lines);
+    }
+
+    /**
+     * Identical lines (same product and same composed note) become one, capped at 20 per line.
+     *
+     * @return list<array{item_id: int|null, product_id: int, quantity: int, notes: ?string}>
+     */
+    private function mergedItems(): array
+    {
+        $merged = [];
+
+        foreach ($this->lines as $line) {
+            $notes = $this->composeNotes($line);
+            $key = $line['product_id'] > 0 ? $line['product_id'].'|'.$notes : 'item'.($line['item_id'] ?? $line['key']);
+
+            if (isset($merged[$key])) {
+                $merged[$key]['quantity'] = min(20, $merged[$key]['quantity'] + $line['quantity']);
+
+                continue;
+            }
+
+            $merged[$key] = [
+                'item_id' => $line['item_id'] ?? null,
+                'product_id' => $line['product_id'],
+                'quantity' => $line['quantity'],
+                'notes' => $notes,
+            ];
+        }
+
+        return array_values($merged);
+    }
+
+    /** @param  list<array{product_id: int|null, quantity: int, notes?: ?string}>  $items */
+    private function itemsSignature(array $items): array
+    {
+        $rows = array_map(fn (array $item) => ((int) $item['product_id']).'|'.$item['quantity'].'|'.trim((string) ($item['notes'] ?? '')), $items);
+        sort($rows);
+
+        return $rows;
     }
 
     private function composeNotes(array $line): ?string
