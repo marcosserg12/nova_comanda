@@ -19,7 +19,9 @@ fi
 npm run build
 $PHP artisan migrate --force
 $PHP artisan optimize
-if $PHP artisan list --raw | grep -q '^filament:optimize'; then
+# Captura antes do grep: com pipefail, o grep -q pode encerrar o artisan por SIGPIPE.
+ARTISAN_COMMANDS=$($PHP artisan list --raw)
+if grep -q '^filament:optimize' <<<"$ARTISAN_COMMANDS"; then
     $PHP artisan filament:optimize
 fi
 chown -R www-data:www-data storage bootstrap/cache
