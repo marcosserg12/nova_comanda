@@ -15,11 +15,29 @@ function clear() {
 export function registerOrderDraft(Alpine) {
     Alpine.data('orderDraft', () => ({
         timer: null,
-        init() {
+        ready: false,
+        restoring: false,
+        async restore() {
             const draft = read();
-            if (draft) {
-                this.$wire.restoreDraft(draft);
+            if (!draft) {
+                this.ready = true;
+                return;
             }
+            if (this.restoring) {
+                return;
+            }
+            this.restoring = true;
+            try {
+                await this.$wire.restoreDraft(draft);
+                this.ready = true;
+            } catch (e) {
+                /* keep the stored draft; retried on the next tick */
+            } finally {
+                this.restoring = false;
+            }
+        },
+        init() {
+            this.restore();
             window.addEventListener('draft-clear', clear);
             this.timer = setInterval(() => this.persist(), 1000);
         },
@@ -28,6 +46,10 @@ export function registerOrderDraft(Alpine) {
             window.removeEventListener('draft-clear', clear);
         },
         persist() {
+            if (!this.ready) {
+                this.restore();
+                return;
+            }
             if (this.$wire.editingOrderId) {
                 return;
             }

@@ -8,6 +8,7 @@ use App\Models\Order;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -139,4 +140,25 @@ it('forbids the kitchen profile from placing orders', function () {
     Livewire::actingAs(userWithRole(Role::Cozinha))->test(OrderForm::class)
         ->call('addProduct', $dish->id)
         ->assertForbidden();
+});
+
+it('does not let the client rewrite locked properties', function (string $property, mixed $value) {
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->set($property, $value);
+})->with([
+    'uuid' => ['uuid', 'x'],
+    'editingOrderId' => ['editingOrderId', 1],
+    'dailyNameProductId' => ['dailyNameProductId', 1],
+])->throws(CannotUpdateLockedPropertyException::class);
+
+it('refuses to load an order over an in-progress one', function () {
+    $dish = kitchenProduct();
+    $order = placeOrder([item($dish, 1)], ['customer_name' => 'João'], $this->user);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id)
+        ->dispatch('edit-order', orderId: $order->id)
+        ->assertSet('editingOrderId', null)
+        ->assertCount('lines', 1)
+        ->assertDispatched('toast', type: 'error', message: 'Termine ou limpe o pedido atual antes de editar outro.');
 });

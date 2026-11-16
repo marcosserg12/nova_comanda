@@ -14,11 +14,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class OrderForm extends Component
 {
+    #[Locked]
     public string $uuid = '';
 
     public string $customerName = '';
@@ -34,8 +36,10 @@ class OrderForm extends Component
 
     public bool $soldOutMode = false;
 
+    #[Locked]
     public ?int $editingOrderId = null;
 
+    #[Locked]
     public ?int $dailyNameProductId = null;
 
     public string $dailyNameInput = '';
@@ -231,6 +235,13 @@ class OrderForm extends Component
     public function loadOrder(int $orderId): void
     {
         Gate::authorize('manage-orders');
+
+        if ($this->editingOrderId === null && $this->lines !== []) {
+            $this->dispatch('toast', type: 'error', message: 'Termine ou limpe o pedido atual antes de editar outro.');
+
+            return;
+        }
+
         $order = Order::query()->with('items.product')->findOrFail($orderId);
 
         if ($order->status !== OrderStatus::Preparing) {
