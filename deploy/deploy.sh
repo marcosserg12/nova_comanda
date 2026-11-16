@@ -8,6 +8,8 @@ PHP=/usr/bin/php8.3
 export COMPOSER_ALLOW_SUPERUSER=1
 
 cd "$APP_DIR"
+# Mesmo que um passo falhe, o Laravel precisa conseguir escrever em storage e cache.
+trap 'chown -R www-data:www-data storage bootstrap/cache' EXIT
 git pull --ff-only origin main
 composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
 # O npm do Windows remove do lock dependências opcionais só de Linux/wasm;
@@ -24,6 +26,5 @@ ARTISAN_COMMANDS=$($PHP artisan list --raw)
 if grep -q '^filament:optimize' <<<"$ARTISAN_COMMANDS"; then
     $PHP artisan filament:optimize
 fi
-chown -R www-data:www-data storage bootstrap/cache
 systemctl restart comanda-reverb
 echo "Deploy concluído: $(git log -1 --format='%h %s')"

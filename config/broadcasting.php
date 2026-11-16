@@ -43,6 +43,9 @@ return [
             ],
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
+                // A hung Reverb must not stall a counter submit for a minute.
+                'connect_timeout' => 2,
+                'timeout' => 3,
             ],
         ],
 

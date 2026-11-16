@@ -75,4 +75,6 @@ Imprima o QR que aparece no canto da TV, ou gere um para `https://comanda.mswebs
 ## Para o desenvolvedor
 
 - Atualizar o sistema: `ssh root@145.223.26.225 'bash /var/www/comanda/deploy/deploy.sh'`
+- Atualize fora do horário de atendimento; depois, aperte F5 na TV, na cozinha e na Estação para carregarem a versão nova.
+- O arquivo nginx no servidor difere de `deploy/nginx/*.conf` porque o certbot acrescenta o bloco HTTPS no próprio servidor; não sobrescreva o arquivo do servidor com o do repositório.
 - Backups em `/var/backups/comanda` (pasta só do sistema, `comanda-AAAA-MM-DD_HHMMSS.sql.gz`).

@@ -28,7 +28,8 @@ it('throttles repeated failed logins', function () {
         $this->post('/login', ['username' => 'balcao', 'password' => 'errada']);
     }
 
-    $this->post('/login', ['username' => 'balcao', 'password' => 'errada'])->assertStatus(429);
+    $this->post('/login', ['username' => 'balcao', 'password' => 'errada'])->assertStatus(429)
+        ->assertSee('Muitas tentativas. Espere um minuto e tente de novo.');
 });
 
 it('logs out', function () {

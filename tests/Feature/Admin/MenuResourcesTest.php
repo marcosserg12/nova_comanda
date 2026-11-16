@@ -3,6 +3,7 @@
 use App\Enums\Destination;
 use App\Enums\Role;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
+use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
@@ -12,6 +13,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use App\Support\BusinessDay;
+use Filament\Actions\DeleteAction;
 
 use function Pest\Livewire\livewire;
 
@@ -99,4 +101,22 @@ it('keeps the admin role when an admin edits themselves, but lets other roles be
         ->fillForm(['role' => 'cozinha'])->call('save')->assertHasNoFormErrors();
 
     expect($other->fresh()->role)->toBe(Role::Cozinha);
+});
+
+it('does not let a category with products be deleted, and deletes an empty one', function () {
+    $used = Category::factory()->create();
+    Product::factory()->for($used)->create();
+    $empty = Category::factory()->create();
+
+    livewire(EditCategory::class, ['record' => $used->getRouteKey()])
+        ->assertActionDisabled(DeleteAction::class);
+    livewire(EditCategory::class, ['record' => $used->getRouteKey()])
+        ->callAction(DeleteAction::class)
+        ->assertOk();
+    expect(Category::query()->whereKey($used->id)->exists())->toBeTrue();
+
+    livewire(EditCategory::class, ['record' => $empty->getRouteKey()])
+        ->assertActionEnabled(DeleteAction::class)
+        ->callAction(DeleteAction::class);
+    expect(Category::query()->whereKey($empty->id)->exists())->toBeFalse();
 });

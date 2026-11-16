@@ -369,3 +369,14 @@ it('saves an edit of an order whose dish sold out and whose price changed', func
 
     expect($order->fresh()->total_cents)->toBe(2400)->and($order->fresh()->takeaway)->toBeTrue();
 });
+
+it('shows Laravel validation messages in Portuguese with friendly field names', function () {
+    $dish = kitchenProduct();
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->call('addProduct', $dish->id)
+        ->set('customerName', str_repeat('a', 61))
+        ->call('submit')
+        ->assertHasErrors(['customerName' => 'max'])
+        ->assertSee('O campo nome do cliente deve ter no máximo 60 caracteres.');
+});

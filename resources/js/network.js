@@ -3,12 +3,16 @@ export function registerNetworkErrors() {
         window.Livewire.hook('request', ({ fail }) => {
             fail(({ status, preventDefault }) => {
                 preventDefault();
-                if (status === 419) {
-                    window.location.reload();
-                    return;
+
+                let message = 'Algo deu errado. Aperte F5 para recarregar.';
+                if (status === 0 || status === 503) {
+                    message = 'Sem conexão. Nada foi perdido: tente de novo.';
+                } else if (status === 419) {
+                    message = 'Sua sessão expirou. Aperte F5.';
                 }
+
                 window.dispatchEvent(new CustomEvent('toast', {
-                    detail: { type: 'error', message: 'Sem conexão. Nada foi perdido: tente de novo.', timeout: 6000 },
+                    detail: { type: 'error', message, timeout: 6000 },
                 }));
             });
         });
