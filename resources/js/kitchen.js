@@ -20,6 +20,8 @@ export function registerKitchen(Alpine) {
             keyHandler: null,
             highlights: {},
             below: 0,
+            belowHighlighted: 0,
+            belowKind: null,
             init() {
                 this.keyHandler = (event) => this.onKey(event);
                 window.addEventListener('keydown', this.keyHandler, { capture: true });
@@ -63,11 +65,13 @@ export function registerKitchen(Alpine) {
                 clearTimeout(highlightTimers.get(id));
                 this.highlights[id] = kind;
                 highlightTimers.set(id, setTimeout(() => this.acknowledge(id), HIGHLIGHT_MS));
+                this.scheduleOverflow();
             },
             acknowledge(id) {
                 clearTimeout(highlightTimers.get(id));
                 highlightTimers.delete(id);
                 delete this.highlights[id];
+                this.scheduleOverflow();
             },
             isHighlighted(id) {
                 return id in this.highlights;
@@ -83,10 +87,29 @@ export function registerKitchen(Alpine) {
                 const grid = this.grid();
                 if (!grid) {
                     this.below = 0;
+                    this.belowHighlighted = 0;
+                    this.belowKind = null;
                     return;
                 }
                 const bottom = grid.getBoundingClientRect().bottom;
-                this.below = this.cards().filter((card) => card.getBoundingClientRect().bottom > bottom + 1).length;
+                const hidden = this.belowCards();
+                this.below = hidden.length;
+                const marked = hidden.filter((card) => card.dataset.orderId in this.highlights);
+                this.belowHighlighted = marked.length;
+                this.belowKind = marked.length ? this.highlights[marked[0].dataset.orderId] : null;
+            },
+            belowCards() {
+                const grid = this.grid();
+                if (!grid) {
+                    return [];
+                }
+                const bottom = grid.getBoundingClientRect().bottom;
+                return this.cards().filter((card) => card.getBoundingClientRect().bottom > bottom + 1);
+            },
+            scrollToBelow() {
+                const hidden = this.belowCards();
+                const target = hidden.find((card) => card.dataset.orderId in this.highlights) ?? hidden[0];
+                target?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             },
             notFound(number) {
                 this.undoBar = '';
@@ -123,6 +146,7 @@ export function registerKitchen(Alpine) {
                     this.typed = '';
                     const id = await this.$wire.markReadyByNumber(number);
                     if (id) {
+                        this.acknowledge(id);
                         this.remember(id, String(number).padStart(3, '0'));
                     }
                     return;

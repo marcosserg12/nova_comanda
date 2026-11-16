@@ -135,3 +135,15 @@ it('refuses guests', function () {
 
     Livewire::test(Board::class)->call('markReady', $order->id)->assertForbidden();
 });
+
+it('flags highlighted cards below the fold on a tappable footer pill', function () {
+    placeOrder([item(kitchenProduct())]);
+
+    Livewire::actingAs($this->cozinha)->test(Board::class)
+        ->assertSeeHtml('data-kitchen-new-below')
+        ->assertSeeHtml('scrollToBelow()')
+        ->assertSeeHtml('belowHighlighted > 0')
+        ->assertSeeHtml('abaixo ↓')
+        ->assertSeeHtml('isHighlighted(1)')
+        ->assertSeeHtml('tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"');
+});

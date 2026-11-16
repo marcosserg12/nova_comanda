@@ -17,12 +17,13 @@
             @php($state = $minutes >= $lateMinutes ? 'late' : ($minutes >= $warnMinutes ? 'warn' : 'ok'))
             <article wire:key="k-{{ $order->id }}" data-order-id="{{ $order->id }}" data-number="{{ $order->displayNumber() }}" data-kitchen-state="{{ $state }}"
                      @pointerdown.prevent @mousedown.prevent @click="acknowledge({{ $order->id }})"
-                     :class="{ 'nana-highlight': isHighlighted({{ $order->id }}), 'ring-4 ring-nana-ink ring-offset-4 ring-offset-nana-cream': selected === {{ $index }} }"
+                     :class="{ 'ring-4 ring-nana-ink ring-offset-4 ring-offset-nana-cream': selected === {{ $index }} }"
                      @class([
-                         'flex flex-col rounded-lg border-2 border-nana-ink shadow-hard',
+                         'relative flex flex-col rounded-lg border-2 border-nana-ink shadow-hard',
                          'bg-white' => $state !== 'late',
                          'bg-[#FFE9E9]' => $state === 'late',
                      ])>
+                <span x-show="isHighlighted({{ $order->id }})" x-cloak aria-hidden="true" class="nana-highlight pointer-events-none absolute -inset-0.5 rounded-lg"></span>
                 <header class="flex items-baseline justify-between gap-2 px-4 pt-3">
                     <span class="flex items-center gap-2">
                         <span class="font-display text-[2.6rem] leading-none tabular-nums">{{ $order->displayNumber() }}</span>
@@ -70,8 +71,11 @@
 
     <footer class="flex shrink-0 items-center gap-3 bg-nana-ink px-4 py-2.5 text-base font-bold text-nana-cream">
         <span>Teclado numérico: digite <kbd class="rounded bg-nana-cream px-1.5 py-0.5 font-extrabold text-nana-ink">14</kbd> e <kbd class="rounded bg-nana-cream px-1.5 py-0.5 font-extrabold text-nana-ink">Enter</kbd> para marcar pronto</span>
-        <span data-kitchen-more x-show="below > 0" x-cloak x-text="'+' + below + (below === 1 ? ' pedido abaixo ↓' : ' pedidos abaixo ↓')"
-              class="ml-auto rounded-md bg-nana-yellow px-3 py-1 font-extrabold text-nana-ink"></span>
+        <button type="button" data-kitchen-more :data-kitchen-new-below="belowHighlighted" x-show="below > 0" x-cloak tabindex="-1" @pointerdown.prevent @mousedown.prevent @click="scrollToBelow()"
+                class="relative ml-auto rounded-md bg-nana-yellow px-3 py-1 font-extrabold text-nana-ink">
+            <span x-show="belowHighlighted > 0" x-cloak aria-hidden="true" class="nana-highlight pointer-events-none absolute inset-0 rounded-md"></span>
+            <span x-text="belowHighlighted > 0 ? (belowKind === 'updated' ? 'ALTERADO' : 'NOVO') + ' abaixo ↓' : '+' + below + (below === 1 ? ' pedido abaixo ↓' : ' pedidos abaixo ↓')"></span>
+        </button>
     </footer>
 
     <div x-show="undoBar" x-cloak
