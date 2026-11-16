@@ -8,6 +8,9 @@
                     class="rounded-xl px-5 py-2 text-lg font-bold shadow-sm">Pedidos de hoje</button>
         </nav>
         <div class="ml-auto flex items-center gap-4">
+            @if (auth()->user()?->hasRole(\App\Enums\Role::Admin))
+                <a href="{{ url('/admin') }}" class="text-sm font-semibold text-stone-500 underline">Administração</a>
+            @endif
             <x-connection-dot />
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
