@@ -5,6 +5,7 @@ use App\Events\BoardChanged;
 use App\Events\OrdersChanged;
 use App\Livewire\Balcao\OrderForm;
 use App\Models\Order;
+use App\Models\Product;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
@@ -161,4 +162,77 @@ it('refuses to load an order over an in-progress one', function () {
         ->assertSet('editingOrderId', null)
         ->assertCount('lines', 1)
         ->assertDispatched('toast', type: 'error', message: 'Termine ou limpe o pedido atual antes de editar outro.');
+});
+
+it('keeps every counter binding in the new layout', function () {
+    kitchenProduct(['name' => 'Filé de frango']);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSeeHtml('x-data="orderDraft"')
+        ->assertSeeHtml('wire:submit="submit"')
+        ->assertSeeHtml('wire:model="customerName" x-ref="name" autofocus')
+        ->assertSeeHtml('@focus-name.window="sheet = false; $nextTick(() => $refs.name?.focus())"')
+        ->assertSeeHtml('wire:model.live.debounce.150ms="search" @keydown.enter.prevent="$wire.addFirstSearchResult()"')
+        ->assertSeeHtml('wire:click="toggleSoldOutMode"')
+        ->assertSeeHtml('data-product-grid')
+        ->assertSeeHtml('data-send-button')
+        ->assertSeeHtml('data-order-bar')
+        ->assertSee('Enviar para a cozinha');
+});
+
+it('switches between eating here and takeaway with the segmented control', function () {
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSee('Comer aqui')
+        ->assertSee('Para viagem')
+        ->assertSeeHtml('data-takeaway-option="0" aria-pressed="true"')
+        ->assertSeeHtml('data-takeaway-option="1" aria-pressed="false"')
+        ->assertSeeHtml("wire:click=\"\$set('takeaway', true)\"")
+        ->set('takeaway', true)
+        ->assertSeeHtml('data-takeaway-option="0" aria-pressed="false"')
+        ->assertSeeHtml('data-takeaway-option="1" aria-pressed="true"');
+});
+
+it('moves "Marcar esgotado" into the more-options menu next to the search', function () {
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSeeHtmlInOrder(['type="search"', 'aria-label="Mais opções"', 'Marcar esgotado'])
+        ->call('toggleSoldOutMode')
+        ->assertSee('Concluir esgotados')
+        ->assertSee('Toque num produto para marcar ou desmarcar como esgotado hoje.');
+});
+
+it('marks products in the order and sold out products on the tiles', function () {
+    $dish = kitchenProduct(['name' => 'Filé de frango']);
+    $soldOut = Product::factory()->create(['category_id' => $dish->category_id, 'name' => 'Picanha bovina']);
+    $soldOut->toggleSoldOut();
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSeeHtml('data-in-cart="0"')
+        ->call('addProduct', $dish->id)
+        ->call('addProduct', $dish->id)
+        ->assertSeeHtml('data-in-cart="2"')
+        ->assertSee('Esgotado hoje')
+        ->assertSee('2 itens');
+});
+
+it('shows the dish of the day under the product name', function () {
+    $dish = kitchenProduct(['name' => 'Prato do dia', 'has_daily_name' => true]);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSee('Definir prato de hoje')
+        ->call('addProduct', $dish->id)
+        ->set('dailyNameInput', 'Feijoada')
+        ->call('saveDailyName')
+        ->assertSeeHtml('text-nana-red">Feijoada</span>');
+});
+
+it('shows the number the next order will get, or the number being edited', function () {
+    $dish = kitchenProduct();
+    placeOrder([item($dish)]);
+    $second = placeOrder([item($dish)], ['customer_name' => 'João'], $this->user);
+
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSee('nº 003')
+        ->dispatch('edit-order', orderId: $second->id)
+        ->assertSee('nº 002')
+        ->assertSee('Alterando pedido');
 });

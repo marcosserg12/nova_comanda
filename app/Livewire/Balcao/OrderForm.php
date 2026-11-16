@@ -6,9 +6,11 @@ use App\Actions\Orders\PlaceOrder;
 use App\Actions\Orders\UpdateOrderItems;
 use App\Enums\OrderStatus;
 use App\Models\Category;
+use App\Models\DailyCounter;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\QuickNote;
+use App\Support\BusinessDay;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
@@ -81,6 +83,36 @@ class OrderForm extends Component
     public function totalCents(): int
     {
         return (int) collect($this->lines)->sum(fn (array $line) => $line['unit_price_cents'] * $line['quantity']);
+    }
+
+    /** Number shown in the order panel: the edited order's number, or a preview of the next one. */
+    #[Computed]
+    public function orderNumber(): string
+    {
+        $number = $this->editingOrderId !== null
+            ? (int) Order::query()->whereKey($this->editingOrderId)->value('number')
+            : (int) DailyCounter::query()->whereKey(BusinessDay::todayString())->value('last_number') + 1;
+
+        return str_pad((string) $number, 3, '0', STR_PAD_LEFT);
+    }
+
+    /** @return array<int, int> product id => quantity in the order being built */
+    #[Computed]
+    public function cartQuantities(): array
+    {
+        $quantities = [];
+
+        foreach ($this->lines as $line) {
+            $quantities[$line['product_id']] = ($quantities[$line['product_id']] ?? 0) + $line['quantity'];
+        }
+
+        return $quantities;
+    }
+
+    #[Computed]
+    public function itemCount(): int
+    {
+        return (int) collect($this->lines)->sum('quantity');
     }
 
     public function selectCategory(int $categoryId): void

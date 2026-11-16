@@ -27,3 +27,16 @@ it('renders the counter alone on /balcao', function () {
         ->assertSeeLivewire(OrderForm::class)
         ->assertDontSeeLivewire(Board::class);
 });
+
+it('renders the counter pane with its tabs as a size container', function () {
+    $this->actingAs(userWithRole(Role::Balcao))->get('/balcao')
+        ->assertOk()
+        ->assertSee('x-data="balcaoPane"', false)
+        ->assertSee('@container/pane', false)
+        ->assertSee('Novo pedido')
+        ->assertSee('Pedidos de hoje')
+        ->assertSee('Na cozinha')
+        ->assertSee('data-in-kitchen-column', false)
+        ->assertSee('Telas')
+        ->assertDontSee('Toque para começar');
+});

@@ -1,3 +1,3 @@
-<x-layouts.app title="Balcão" body-class="bg-stone-100 overflow-hidden">
-    <x-balcao-pane />
+<x-layouts.app title="Balcão" body-class="bg-nana-cream overflow-hidden">
+    <div class="h-dvh"><x-balcao-pane /></div>
 </x-layouts.app>
