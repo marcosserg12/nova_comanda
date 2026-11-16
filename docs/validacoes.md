@@ -52,3 +52,22 @@ Correções feitas durante a varredura:
 - nenhuma (a varredura passou de primeira; os ajustes finais A1–A6 foram feitos antes, no commit "ajustes finais do redesenho").
 
 Pendente na loja (dono): leitura da cozinha a ~2 m, toque no tablet (se houver) e "Detectar monitores" com os dois monitores reais.
+
+## 1b. Estação com o hardware definitivo (Task 20, data: AAAA-MM-DD)
+
+| Verificação | Resultado |
+|---|---|
+| Atalho abre a estação cobrindo os dois monitores | OK / FALHOU |
+| Botão "Detectar monitores" acerta a divisão entre balcão e cozinha | OK / FALHOU |
+| Toque (ou teclado numérico) da cozinha não atrapalha a digitação do balcão | OK / FALHOU |
+| Pedido novo aparece com NOVO (e rodapé amarelo quando está mais abaixo) e dá para ver do fogão | OK / FALHOU |
+
+## 3. Som automático na TV (Fully Kiosk) (Task 20, data: AAAA-MM-DD)
+
+| Verificação | Resultado |
+|---|---|
+| Painel abre sozinho ao ligar a TV | OK / FALHOU |
+| Anúncio "PEDIDO PRONTO" toca som sem tocar na TV | OK / FALHOU |
+| Após cair e voltar a internet, o painel volta a atualizar sozinho | OK / FALHOU |
+
+Qualquer FALHOU vira item de acompanhamento para o dono. Não bloqueia o fechamento da fase 1 se houver um jeito de contornar, como tocar em "Toque para começar" uma vez por dia na TV.
