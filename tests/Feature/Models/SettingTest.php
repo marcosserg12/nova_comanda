@@ -15,3 +15,11 @@ it('stores values and refreshes the cache on put', function () {
 
     expect(Setting::get(Setting::READY_MINUTES))->toBe(8);
 });
+
+it('serves the new value after a cached value is replaced', function () {
+    Setting::put(Setting::READY_MINUTES, 7);
+    expect(Setting::get(Setting::READY_MINUTES))->toBe(7);
+
+    Setting::put(Setting::READY_MINUTES, 9);
+    expect(Setting::get(Setting::READY_MINUTES))->toBe(9);
+});
