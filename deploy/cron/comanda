@@ -1,0 +1,1 @@
+* * * * * www-data cd /var/www/comanda && /usr/bin/php8.3 artisan schedule:run >> /dev/null 2>&1
