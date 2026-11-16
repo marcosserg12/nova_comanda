@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 
 class BackupDatabase extends Command
@@ -41,19 +42,38 @@ class BackupDatabase extends Command
             ]);
 
         if ($dump->failed()) {
+            File::delete($file);
+            Log::error('comanda:backup-db: mysqldump falhou', ['error' => $dump->errorOutput()]);
             $this->error('mysqldump falhou: '.$dump->errorOutput());
 
             return self::FAILURE;
         }
 
-        Process::run(['gzip', '-f', $file]);
+        $gz = Process::timeout(300)->run(['gzip', '-f', $file]);
+
+        if ($gz->failed()) {
+            File::delete([$file, $file.'.gz']);
+            Log::error('comanda:backup-db: gzip falhou', ['error' => $gz->errorOutput()]);
+            $this->error('gzip falhou: '.$gz->errorOutput());
+
+            return self::FAILURE;
+        }
+
+        if (File::exists($file.'.gz')) {
+            File::chmod($file.'.gz', 0600);
+        }
 
         $keepDays = (int) ($this->option('keep') ?: config('comanda.backup_keep_days'));
         $limit = now()->subDays($keepDays)->getTimestamp();
 
-        foreach (File::files($dir) as $existing) {
-            if ($existing->getMTime() < $limit) {
-                File::delete($existing->getPathname());
+        $dumps = array_merge(
+            File::glob($dir.'/comanda-*.sql.gz'),
+            File::glob($dir.'/comanda-*.sql'),
+        );
+
+        foreach ($dumps as $existing) {
+            if (File::lastModified($existing) < $limit) {
+                File::delete($existing);
             }
         }
 
