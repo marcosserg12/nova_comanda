@@ -4,6 +4,7 @@ import { registerToasts } from './toasts';
 import { registerConnection } from './connection';
 import { registerNetworkErrors } from './network';
 import { registerOrderDraft } from './order-draft';
+import { registerKitchen } from './kitchen';
 
 document.addEventListener('alpine:init', () => {
     const Alpine = window.Alpine;
@@ -11,6 +12,7 @@ document.addEventListener('alpine:init', () => {
     registerToasts(Alpine);
     registerConnection(Alpine);
     registerOrderDraft(Alpine);
+    registerKitchen(Alpine);
 });
 
 registerNetworkErrors();
