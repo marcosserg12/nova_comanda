@@ -26,9 +26,9 @@ class SettingsPage extends Page
 
     public string $restaurantName = '';
 
-    public ?int $stationLeftWidth = 1920;
+    public ?int $stationLeftWidth = 1366;
 
-    public ?int $stationRightWidth = 1920;
+    public ?int $stationRightWidth = 1366;
 
     public function mount(): void
     {

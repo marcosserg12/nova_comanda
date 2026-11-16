@@ -55,7 +55,7 @@ it('survives an emptied number field without crashing or saving it', function ()
         ->assertOk();
 
     expect((int) Setting::get(Setting::READY_MINUTES))->toBe(5)
-        ->and((int) Setting::get(Setting::STATION_LEFT_WIDTH))->toBe(1920);
+        ->and((int) Setting::get(Setting::STATION_LEFT_WIDTH))->toBe(1366);
 });
 
 it('titles the order history in pt-BR sentence case', function () {

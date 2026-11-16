@@ -1,4 +1,6 @@
-<span x-data class="inline-flex items-center gap-2 text-sm font-semibold">
-    <span class="h-3 w-3 rounded-full" :class="$store.conn.online ? 'bg-emerald-500' : 'animate-pulse bg-red-600'"></span>
-    <span x-text="$store.conn.online ? 'Online' : 'Sem conexão'"></span>
+@props(['tone' => 'dark'])
+@php($onColor = $tone === 'light' ? 'bg-[#7CFFB2]' : 'bg-nana-green')
+<span x-data {{ $attributes->class(['inline-flex items-center gap-2 text-sm font-bold', 'text-[#FFE3B0]' => $tone === 'light']) }}>
+    <span class="size-3 rounded-full" :class="$store.conn.online ? '{{ $onColor }}' : 'animate-pulse bg-nana-yellow'"></span>
+    <span x-text="$store.conn.online ? 'Online' : 'Sem conexão'">Online</span>
 </span>

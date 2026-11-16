@@ -23,3 +23,8 @@ it('serves the new value after a cached value is replaced', function () {
     Setting::put(Setting::READY_MINUTES, 9);
     expect(Setting::get(Setting::READY_MINUTES))->toBe(9);
 });
+
+it('defaults the station widths to the 18.5 inch monitor', function () {
+    expect(Setting::get(Setting::STATION_LEFT_WIDTH))->toBe(1366)
+        ->and(Setting::get(Setting::STATION_RIGHT_WIDTH))->toBe(1366);
+});

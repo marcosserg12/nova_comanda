@@ -18,8 +18,8 @@ class Setting extends Model
     public const DEFAULTS = [
         self::READY_MINUTES => 5,
         self::RESTAURANT_NAME => 'Nana Lanches',
-        self::STATION_LEFT_WIDTH => 1920,
-        self::STATION_RIGHT_WIDTH => 1920,
+        self::STATION_LEFT_WIDTH => 1366,
+        self::STATION_RIGHT_WIDTH => 1366,
     ];
 
     protected $primaryKey = 'key';

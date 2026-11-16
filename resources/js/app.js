@@ -1,3 +1,8 @@
+import '@fontsource/archivo/500.css';
+import '@fontsource/archivo/600.css';
+import '@fontsource/archivo/700.css';
+import '@fontsource/archivo/800.css';
+import '@fontsource/archivo-black/400.css';
 import './echo';
 import { registerDevice } from './device';
 import { registerToasts } from './toasts';
