@@ -1,1 +1,3 @@
-<x-layouts.app title="Acompanhe seu pedido"><h1 class="p-8 text-3xl font-black">Acompanhe seu pedido</h1></x-layouts.app>
+<x-layouts.app title="Acompanhe seu pedido" body-class="bg-white">
+    <livewire:painel.public-board variant="mobile" />
+</x-layouts.app>
