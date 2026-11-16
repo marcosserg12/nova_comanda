@@ -143,3 +143,35 @@ it('ignores confirmCancel without a selected order', function () {
 
     expect($order->fresh()->status)->toBe(OrderStatus::Preparing);
 });
+
+it('reports the in-kitchen count to the counter tab', function () {
+    placeOrder([item($this->dish)], ['customer_name' => 'Carla']);
+    placeOrder([item($this->dish)], ['customer_name' => 'Bruno']);
+
+    Livewire::actingAs($this->user)->test(InKitchenList::class)
+        ->assertSee('Na cozinha · 2')
+        ->assertSeeHtml('data-in-kitchen-count="2"')
+        ->assertSeeHtml('wire:key="ik-count-2"')
+        ->assertSeeHtml("x-init=\"\$dispatch('in-kitchen-count', { count: 2 })\"");
+});
+
+it('renders today orders as cards with status, waiting time and the right actions', function () {
+    $preparing = placeOrder([item($this->dish)], ['customer_name' => 'Carla', 'takeaway' => true]);
+    $ready = placeOrder([item($this->dish)], ['customer_name' => 'Bruno']);
+    app(TransitionOrder::class)->markReady($ready);
+
+    Livewire::actingAs($this->user)->test(TodayOrders::class)
+        ->assertSee('Preparando')
+        ->assertSee('Pronto')
+        ->assertSee('VIAGEM')
+        ->assertSee('Editar')
+        ->assertSee('Entregue')
+        ->assertSee('Voltar p/ preparo')
+        ->assertSeeHtml('wire:click="edit('.$preparing->id.')"')
+        ->assertSeeHtml('wire:click="markDelivered('.$ready->id.')"')
+        ->assertSeeHtml('wire:click="startCancel('.$preparing->id.')"')
+        ->call('startCancel', $preparing->id)
+        ->assertSee('Cancelar pedido')
+        ->assertSee('Cliente desistiu')
+        ->assertSeeHtml('role="dialog"');
+});
