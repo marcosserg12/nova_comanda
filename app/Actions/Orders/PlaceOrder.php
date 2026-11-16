@@ -32,6 +32,7 @@ final class PlaceOrder
         $built = $this->builder->handle($data['items']);
 
         try {
+            // Concurrent orders can deadlock on the daily counter row; Laravel retries the closure.
             $order = DB::transaction(function () use ($data, $built, $by, $source) {
                 $day = BusinessDay::today();
 
@@ -51,7 +52,7 @@ final class PlaceOrder
                 $order->items()->createMany($built['items']);
 
                 return $order;
-            });
+            }, attempts: 3);
         } catch (UniqueConstraintViolationException $e) {
             $existing = Order::query()->where('uuid', $data['uuid'])->first();
             if ($existing === null) {
