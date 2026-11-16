@@ -13,6 +13,7 @@ import { registerKitchen } from './kitchen';
 import { registerAnnouncer } from './announcer';
 import { registerLauncher } from './launcher';
 import { registerBalcao } from './balcao';
+import { registerStation } from './station';
 
 document.addEventListener('alpine:init', () => {
     const Alpine = window.Alpine;
@@ -24,6 +25,7 @@ document.addEventListener('alpine:init', () => {
     registerAnnouncer(Alpine);
     registerLauncher(Alpine);
     registerBalcao(Alpine);
+    registerStation(Alpine);
 });
 
 registerNetworkErrors();
