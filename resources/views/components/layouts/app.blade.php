@@ -10,5 +10,6 @@
 </head>
 <body class="min-h-screen font-sans text-nana-ink antialiased {{ $bodyClass }}">
     {{ $slot }}
+    <x-toasts />
 </body>
 </html>

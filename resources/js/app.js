@@ -1,9 +1,14 @@
-//
-
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allow your team to quickly build robust real-time web applications.
- */
-
 import './echo';
+import { registerDevice } from './device';
+import { registerToasts } from './toasts';
+import { registerConnection } from './connection';
+import { registerNetworkErrors } from './network';
+
+document.addEventListener('alpine:init', () => {
+    const Alpine = window.Alpine;
+    registerDevice(Alpine);
+    registerToasts(Alpine);
+    registerConnection(Alpine);
+});
+
+registerNetworkErrors();
