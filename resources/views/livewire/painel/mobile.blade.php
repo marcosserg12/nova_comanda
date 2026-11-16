@@ -1,37 +1,64 @@
-<div x-data="trackMine" @announce.window="onAnnounce($event.detail)" wire:poll.20s class="mx-auto min-h-screen max-w-md bg-white p-4">
-    <h1 class="text-center text-3xl font-black text-nana-red">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</h1>
+<div x-data="trackMine" @announce.window="onAnnounce($event.detail)" wire:poll.20s class="mx-auto flex min-h-dvh max-w-md flex-col bg-nana-cream">
+    @php($readyNumbers = array_column($this->board['ready'], 'number'))
+    @php($preparingNumbers = array_column($this->board['preparing'], 'number'))
+    <span hidden wire:key="sync-{{ md5(json_encode([$readyNumbers, $preparingNumbers])) }}" x-init="sync(@js($readyNumbers), @js($preparingNumbers))"></span>
 
-    <label class="mt-4 block">
-        <span class="text-sm font-semibold uppercase text-stone-500">Seu número</span>
-        <input type="tel" inputmode="numeric" maxlength="3" x-model="mine" placeholder="Ex.: 42"
-               class="mt-1 w-full rounded-xl border border-stone-300 px-4 py-3 text-2xl font-black">
-    </label>
+    <header class="relative border-b-4 border-nana-ink bg-nana-red px-4 pb-4 pt-5 text-center text-nana-cream">
+        <h1 class="font-display text-3xl leading-none">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</h1>
+        <p class="mt-1.5 text-sm font-bold text-[#FFE3B0]">Acompanhe seu pedido</p>
+        <div class="absolute right-3 top-3">
+            <x-ui.screens-menu compact align="right" current="acompanhar" />
+        </div>
+    </header>
 
-    <p x-show="alert" x-cloak class="mt-4 rounded-2xl bg-nana-yellow p-4 text-center text-2xl font-black">Seu pedido está pronto!</p>
+    <main class="flex flex-col gap-4 p-5">
+        <label class="flex items-center justify-between gap-3 rounded-xl border-3 border-nana-ink bg-white px-4 py-2">
+            <input type="tel" inputmode="numeric" maxlength="3" x-model="mine" placeholder="Ex.: 42"
+                   class="min-w-0 flex-1 border-0 p-0 font-display text-3xl placeholder:text-nana-line">
+            <span class="shrink-0 text-xs font-extrabold uppercase tracking-wider text-nana-muted">Seu número</span>
+        </label>
 
-    <h2 class="mt-6 rounded-t-2xl bg-nana-red px-4 py-2 text-xl font-black text-white">Prontos</h2>
-    <ul class="divide-y divide-stone-100 rounded-b-2xl border border-stone-200">
-        @forelse ($this->board['ready'] as $entry)
-            <li wire:key="mr-{{ $entry['id'] }}" class="flex items-center justify-between px-4 py-3"
-                :class="isMine('{{ $entry['number'] }}') ? 'bg-nana-yellow' : ''">
-                <span class="text-3xl font-black tabular-nums">{{ $entry['number'] }}</span>
-                <span class="text-xl font-bold">{{ $entry['first_name'] }}</span>
-            </li>
-        @empty
-            <li class="px-4 py-6 text-center text-stone-400">Nenhum pedido pronto agora.</li>
-        @endforelse
-    </ul>
+        <div x-show="myState === 'empty'" class="rounded-xl border-3 border-dashed border-nana-muted p-5 text-center text-lg font-bold text-nana-muted">
+            Digite o número do seu pedido para acompanhar.
+        </div>
+        <div data-my-order="preparing" x-show="myState === 'preparing'" x-cloak class="rounded-xl border-3 border-nana-ink bg-white p-5 text-center shadow-hard">
+            <p class="text-base font-extrabold text-nana-muted">Pedido</p>
+            <p class="my-2 font-display text-7xl leading-none tabular-nums" x-text="myNumber"></p>
+            <span class="inline-block rounded-lg border-2 border-nana-ink bg-nana-cream px-4 py-2 text-lg font-extrabold">Preparando…</span>
+        </div>
+        <div data-my-order="ready" x-show="myState === 'ready'" x-cloak class="rounded-xl border-3 border-nana-ink bg-nana-yellow p-5 text-center shadow-hard">
+            <p class="text-base font-extrabold">Seu pedido está</p>
+            <p class="my-2 font-display text-5xl leading-none">PRONTO!</p>
+            <span class="inline-block rounded-lg border-2 border-nana-ink bg-nana-ink px-4 py-2 text-lg font-extrabold text-nana-cream">Retire no balcão</span>
+        </div>
+        <div x-show="myState === 'unknown'" x-cloak class="rounded-xl border-3 border-nana-ink bg-white p-5 text-center text-lg font-bold">
+            Não encontramos o pedido <span class="font-display" x-text="myNumber"></span> na fila agora.
+        </div>
 
-    <h2 class="mt-6 rounded-t-2xl bg-stone-800 px-4 py-2 text-xl font-black text-white">Preparando</h2>
-    <ul class="divide-y divide-stone-100 rounded-b-2xl border border-stone-200">
-        @forelse ($this->board['preparing'] as $entry)
-            <li wire:key="mp-{{ $entry['id'] }}" class="flex items-center justify-between px-4 py-3"
-                :class="isMine('{{ $entry['number'] }}') ? 'bg-amber-100' : ''">
-                <span class="text-3xl font-black tabular-nums">{{ $entry['number'] }}</span>
-                <span class="text-xl font-bold">{{ $entry['first_name'] }}</span>
-            </li>
-        @empty
-            <li class="px-4 py-6 text-center text-stone-400">Nenhum pedido em preparo.</li>
-        @endforelse
-    </ul>
+        <section>
+            <h2 class="font-display text-xl">Prontos</h2>
+            <ul class="mt-2 space-y-1 text-lg font-bold text-nana-muted">
+                @forelse ($this->board['ready'] as $entry)
+                    <li wire:key="mr-{{ $entry['id'] }}" class="rounded-md px-2 py-1" :class="isMine('{{ $entry['number'] }}') ? 'bg-nana-yellow text-nana-ink' : ''">
+                        <span class="mr-2 font-display text-xl text-nana-ink tabular-nums">{{ $entry['number'] }}</span>{{ $entry['first_name'] }} — pronto
+                    </li>
+                @empty
+                    <li class="px-2 py-1">Nenhum pedido pronto agora.</li>
+                @endforelse
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="font-display text-xl">Preparando</h2>
+            <ul class="mt-2 space-y-1 text-lg font-bold text-nana-muted">
+                @forelse ($this->board['preparing'] as $entry)
+                    <li wire:key="mp-{{ $entry['id'] }}" data-phone-preparing="{{ $entry['number'] }}" class="rounded-md px-2 py-1" :class="isMine('{{ $entry['number'] }}') ? 'bg-white text-nana-ink' : ''">
+                        <span class="mr-2 font-display text-xl text-nana-ink tabular-nums">{{ $entry['number'] }}</span>{{ $entry['first_name'] }} — preparando
+                    </li>
+                @empty
+                    <li class="px-2 py-1">Nenhum pedido em preparo.</li>
+                @endforelse
+            </ul>
+        </section>
+    </main>
 </div>

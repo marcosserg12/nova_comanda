@@ -41,21 +41,44 @@ export function registerAnnouncer(Alpine) {
 
     Alpine.data('trackMine', () => ({
         mine: '',
-        alert: false,
+        ready: [],
+        preparing: [],
         init() {
             try { this.mine = localStorage.getItem('nana.mine') || ''; } catch (e) { this.mine = ''; }
             this.$watch('mine', (value) => {
                 try { localStorage.setItem('nana.mine', value); } catch (e) { /* armazenamento indisponível */ }
             });
         },
+        pad(value) {
+            const number = parseInt(value, 10);
+            return Number.isInteger(number) && number > 0 ? String(number).padStart(3, '0') : '';
+        },
+        get myNumber() {
+            return this.pad(this.mine);
+        },
+        get myState() {
+            if (!this.myNumber) {
+                return 'empty';
+            }
+            if (this.ready.includes(this.myNumber)) {
+                return 'ready';
+            }
+            return this.preparing.includes(this.myNumber) ? 'preparing' : 'unknown';
+        },
+        sync(ready, preparing) {
+            this.ready = ready;
+            this.preparing = preparing;
+        },
         isMine(number) {
-            return this.mine !== '' && number === String(parseInt(this.mine, 10)).padStart(3, '0');
+            return this.myNumber !== '' && number === this.myNumber;
         },
         onAnnounce({ number }) {
             if (!this.isMine(number)) {
                 return;
             }
-            this.alert = true;
+            if (!this.ready.includes(number)) {
+                this.ready = [...this.ready, number];
+            }
             if (navigator.vibrate) {
                 navigator.vibrate([300, 150, 300, 150, 300]);
             }
