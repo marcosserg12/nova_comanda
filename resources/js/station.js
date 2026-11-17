@@ -16,9 +16,13 @@ function store(key, value) {
     try { localStorage.setItem(key, String(value)); } catch (e) { /* armazenamento indisponível */ }
 }
 
-/** Screen width in this window's CSS pixels (monitors can use different Windows scaling). */
-function cssWidth(screen) {
-    return Math.round(screen.width * (screen.devicePixelRatio || 1) / (window.devicePixelRatio || 1));
+/**
+ * Real monitor width in device pixels. Widths are kept in device pixels and converted with the
+ * window's current scale, so the split stays on the monitor border even after a Windows scaling
+ * change (window moved to a monitor with another scale) or a Ctrl +/− zoom.
+ */
+function deviceWidth(screen) {
+    return Math.round(screen.width * (screen.devicePixelRatio || 1));
 }
 
 /** The monitor touching the right edge of `left` and sharing part of its height. */
@@ -35,17 +39,27 @@ function toast(type, message) {
 
 export function registerStation(Alpine) {
     Alpine.data('station', (configuredLeft = 1366, configuredRight = 1366) => ({
-        leftWidth: stored(LEFT_KEY, 800) ?? configuredLeft,
-        rightWidth: stored(RIGHT_KEY, KITCHEN_MIN) ?? configuredRight,
+        leftDevice: stored(LEFT_KEY, 800) ?? configuredLeft,
+        rightDevice: stored(RIGHT_KEY, KITCHEN_MIN) ?? configuredRight,
+        dpr: window.devicePixelRatio || 1,
         viewport: window.innerWidth,
         detecting: false,
         onResize: null,
         init() {
-            this.onResize = () => { this.viewport = window.innerWidth; };
+            this.onResize = () => {
+                this.viewport = window.innerWidth;
+                this.dpr = window.devicePixelRatio || 1;
+            };
             window.addEventListener('resize', this.onResize);
         },
         destroy() {
             window.removeEventListener('resize', this.onResize);
+        },
+        get leftWidth() {
+            return Math.round(this.leftDevice / this.dpr);
+        },
+        get rightWidth() {
+            return Math.round(this.rightDevice / this.dpr);
         },
         get single() {
             return this.viewport < this.leftWidth + KITCHEN_MIN;
@@ -63,16 +77,16 @@ export function registerStation(Alpine) {
                 const details = await window.getScreenDetails();
                 const screens = [...details.screens].sort((a, b) => a.left - b.left);
                 const left = screens[0];
-                const leftWidth = left ? cssWidth(left) : 0;
+                const leftWidth = left ? deviceWidth(left) : 0;
                 if (!(leftWidth >= 800)) {
                     throw new Error('largura inválida');
                 }
-                this.leftWidth = leftWidth;
+                this.leftDevice = leftWidth;
                 store(LEFT_KEY, leftWidth);
                 const right = rightNeighbour(screens, left);
-                const rightWidth = right ? cssWidth(right) : 0;
+                const rightWidth = right ? deviceWidth(right) : 0;
                 if (rightWidth >= KITCHEN_MIN) {
-                    this.rightWidth = rightWidth;
+                    this.rightDevice = rightWidth;
                     store(RIGHT_KEY, rightWidth);
                 }
                 if (rightWidth >= KITCHEN_MIN) {
