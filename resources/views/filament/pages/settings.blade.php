@@ -13,7 +13,7 @@
         </x-filament::section>
 
         <x-filament::section>
-            <x-slot name="heading">Estação (dois monitores)</x-slot>
+            <x-slot name="heading">Balcão + Cozinha (dois monitores)</x-slot>
             <label style="display:block;">Largura do monitor do balcão (pixels)
                 <x-filament::input.wrapper><x-filament::input type="number" wire:model="stationLeftWidth" /></x-filament::input.wrapper>
             </label>

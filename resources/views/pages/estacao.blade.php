@@ -1,4 +1,4 @@
-<x-layouts.app title="Estação" body-class="bg-nana-cream overflow-hidden">
+<x-layouts.app title="Balcão + Cozinha" body-class="bg-nana-cream overflow-hidden">
     <div x-data="station({{ $leftWidth }}, {{ $rightWidth }})" data-configured-left-width="{{ $leftWidth }}"
          class="grid h-dvh" style="grid-template-columns: minmax(0, 1fr)" :style="{ gridTemplateColumns: columns }">
         <div data-station-left class="h-dvh min-w-0">

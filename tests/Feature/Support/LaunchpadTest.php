@@ -19,10 +19,12 @@ it('points every screen to its route with pt-BR labels and tags', function () {
     $screens = collect(Launchpad::for(userWithRole(Role::Admin)))->keyBy('key');
 
     expect($screens['estacao']->url)->toBe(route('estacao'))
-        ->and($screens['estacao']->label)->toBe('Estação')
+        ->and($screens['estacao']->label)->toBe('Balcão + Cozinha')
+        ->and($screens['estacao']->description)->toBe('Para o PC com 2 monitores: a cozinha aparece no monitor ao lado')
         ->and($screens['estacao']->badge)->toBe('PC do balcão')
         ->and($screens['balcao']->url)->toBe(route('balcao'))
-        ->and($screens['balcao']->label)->toBe('Balcão')
+        ->and($screens['balcao']->label)->toBe('Só balcão')
+        ->and($screens['balcao']->description)->toBe('Para tablet ou outro PC: lançar e acompanhar pedidos')
         ->and($screens['cozinha']->url)->toBe(route('cozinha'))
         ->and($screens['painel']->url)->toBe(route('painel'))
         ->and($screens['painel']->label)->toBe('Painel da TV')

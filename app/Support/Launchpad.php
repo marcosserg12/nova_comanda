@@ -23,8 +23,8 @@ final class Launchpad
         $screens = [];
 
         if ($user->hasRole(Role::Admin, Role::Balcao)) {
-            $screens[] = new Screen('estacao', route('estacao'), 'Estação', 'Balcão e cozinha nos dois monitores', 'station', 'PC do balcão');
-            $screens[] = new Screen('balcao', route('balcao'), 'Balcão', 'Só lançar e acompanhar pedidos', 'counter');
+            $screens[] = new Screen('estacao', route('estacao'), 'Balcão + Cozinha', 'Para o PC com 2 monitores: a cozinha aparece no monitor ao lado', 'station', 'PC do balcão');
+            $screens[] = new Screen('balcao', route('balcao'), 'Só balcão', 'Para tablet ou outro PC: lançar e acompanhar pedidos', 'counter');
         }
 
         if ($user->hasRole(Role::Admin, Role::Balcao, Role::Cozinha)) {

@@ -7,8 +7,8 @@ Endereço do sistema: **https://comanda.mswebsolutions.site**
 | Tela | Endereço | Onde fica |
 |---|---|---|
 | Tela de início | `/` | escolhe onde entrar; cada pessoa vê só o que pode usar |
-| Estação (balcão + cozinha) | `/estacao` | PC do balcão, dois monitores |
-| Só balcão | `/balcao` | qualquer computador |
+| Balcão + Cozinha | `/estacao` | PC do balcão, dois monitores |
+| Só balcão | `/balcao` | tablet ou outro computador |
 | Só cozinha | `/cozinha` | aparelho próprio na cozinha (plano B) |
 | TV do salão | `/painel` | TV com Google TV |
 | Celular do cliente | `/acompanhar` | QR code no balcão |
@@ -26,8 +26,8 @@ Endereço do sistema: **https://comanda.mswebsolutions.site**
    ```
    "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\nana-estacao" --app="https://comanda.mswebsolutions.site/estacao" --window-position=0,0 --window-size=2732,768 --autoplay-policy=no-user-gesture-required
    ```
-4. Abra o atalho e, na Estação, clique em **"Detectar monitores"** uma vez. O Chrome pergunta se pode "gerenciar janelas": clique em **Permitir**. Se não funcionar, entre em `/admin` → Configurações e ajuste a **largura do monitor do balcão** (o padrão é 1366).
-5. Se houver só um monitor ligado, a Estação mostra apenas o balcão (com a coluna "Na cozinha") e um aviso pequeno: "Cozinha no 2º monitor não encontrada". Confira o cabo do segundo monitor.
+4. Abra o atalho e, na tela Balcão + Cozinha, clique em **"Detectar monitores"** uma vez. O Chrome pergunta se pode "gerenciar janelas": clique em **Permitir**. Se não funcionar, entre em `/admin` → Configurações e ajuste a **largura do monitor do balcão** (o padrão é 1366).
+5. Se houver só um monitor ligado, a tela Balcão + Cozinha mostra apenas o balcão (com a coluna "Na cozinha") e um aviso pequeno: "Cozinha no 2º monitor não encontrada". Confira o cabo do segundo monitor.
 6. Para abrir sozinho ao ligar: tecle Windows+R, digite `shell:startup` e copie o atalho para essa pasta.
 7. Em Windows → Energia, deixe a tela e o computador **nunca** desligarem.
 8. Faça login como `balcao` e marque **Manter conectado neste aparelho**.
@@ -40,7 +40,7 @@ Endereço do sistema: **https://comanda.mswebsolutions.site**
    - Web Content Settings → **Autoplay Audio** ligado;
    - Device Management → **Keep Screen On** ligado e **Launch on Boot** ligado;
    - Web Auto Reload → recarregar ao reconectar a rede.
-3. Se aparecer "Toque para começar" na TV, o som automático não está liberado: revise o item Autoplay Audio. (Só a TV tem esse aviso; a Estação e a cozinha não têm.) Enquanto isso não for resolvido, toque uma vez na tela da TV por dia para liberar o som.
+3. Se aparecer "Toque para começar" na TV, o som automático não está liberado: revise o item Autoplay Audio. (Só a TV tem esse aviso; o balcão e a cozinha não têm.) Enquanto isso não for resolvido, toque uma vez na tela da TV por dia para liberar o som.
 4. A TV mostra até 12 pedidos em "Preparando"; se houver mais, aparece "+N" (por exemplo "+3"). A coluna vermelha mostra os 4 pedidos prontos mais recentes.
 
 ## QR code do balcão
@@ -49,7 +49,7 @@ Imprima o QR que aparece no canto da TV, ou gere um para `https://comanda.mswebs
 
 ## Rotina do dia
 
-- **Ao abrir:** ligue o PC e a TV. Nada mais para tocar: a Estação e a cozinha já ficam prontas.
+- **Ao abrir:** ligue o PC e a TV. Nada mais para tocar: o balcão e a cozinha já ficam prontos.
 - **Fazer um pedido:** digite o nome do cliente, toque nos pratos, escolha **Comer aqui** ou **Para viagem** (logo abaixo do nome) e toque em **"Enviar para a cozinha"** (ou tecle Enter).
 - **Prato do dia:** ao tocar no "Prato do dia" pela primeira vez, o sistema pergunta o prato de hoje. Para trocar, use o ✎ no botão.
 - **Acabou um prato:** toque no botão **"⋯"** ao lado da busca → **"Marcar esgotado"** e toque no prato que acabou. Quando terminar, toque em **"Concluir esgotados"**. No dia seguinte o prato volta sozinho.
@@ -75,6 +75,6 @@ Imprima o QR que aparece no canto da TV, ou gere um para `https://comanda.mswebs
 ## Para o desenvolvedor
 
 - Atualizar o sistema: `ssh root@145.223.26.225 'bash /var/www/comanda/deploy/deploy.sh'`
-- Atualize fora do horário de atendimento; depois, aperte F5 na TV, na cozinha e na Estação para carregarem a versão nova.
+- Atualize fora do horário de atendimento; depois, aperte F5 na TV e no PC do balcão (balcão + cozinha) para carregarem a versão nova.
 - O arquivo nginx no servidor difere de `deploy/nginx/*.conf` porque o certbot acrescenta o bloco HTTPS no próprio servidor; não sobrescreva o arquivo do servidor com o do repositório.
 - Backups em `/var/backups/comanda` (pasta só do sistema, `comanda-AAAA-MM-DD_HHMMSS.sql.gz`).
