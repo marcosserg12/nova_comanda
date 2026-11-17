@@ -4,6 +4,7 @@ namespace App\Actions\Orders;
 
 use App\Enums\OrderSource;
 use App\Enums\OrderStatus;
+use App\Models\CustomerName;
 use App\Models\Order;
 use App\Models\User;
 use App\Support\BusinessDay;
@@ -64,6 +65,8 @@ final class PlaceOrder
 
         $order->load('items');
         $this->broadcaster->changed($order, $order->status === OrderStatus::Preparing ? 'created' : 'delivered');
+        // Suggestions are a convenience: a failure here must not fail an order already placed.
+        rescue(fn () => CustomerName::record($order->customer_name));
 
         return $order;
     }

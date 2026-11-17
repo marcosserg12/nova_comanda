@@ -171,7 +171,8 @@ it('keeps every counter binding in the new layout', function () {
         ->assertSeeHtml('x-data="orderDraft"')
         ->assertSeeHtml('wire:submit="submit"')
         ->assertSeeHtml('wire:model="customerName" x-ref="name" autofocus')
-        ->assertSeeHtml('@focus-name.window="sheet = false; $nextTick(() => $refs.name?.focus())"')
+        ->assertSeeHtml('@focus-name.window="sheet = false"')
+        ->assertSeeHtml('@focus-name.window="orderSent()"')
         ->assertSeeHtml('wire:model.live.debounce.150ms="search" @keydown.enter.prevent="$wire.addFirstSearchResult()"')
         ->assertSeeHtml('wire:click="toggleSoldOutMode"')
         ->assertSeeHtml('data-product-grid')
@@ -411,4 +412,13 @@ it('starts a new line instead of capping when a plain line is already at 20', fu
         ->assertCount('lines', 2)
         ->assertSet('lines.0.quantity', 20)
         ->assertSet('lines.1.quantity', 1);
+});
+
+it('offers name suggestions and a confirm button in the customer name field', function () {
+    Livewire::actingAs($this->user)->test(OrderForm::class)
+        ->assertSeeHtml('x-data="nameSuggest"')
+        ->assertSeeHtml('role="combobox"')
+        ->assertSeeHtml('data-confirm-name')
+        ->assertSeeHtml('aria-label="Confirmar nome"')
+        ->assertSeeHtml('data-product-search');
 });

@@ -3,6 +3,7 @@
 namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
+use App\Models\CustomerName;
 use App\Models\Order;
 use App\Support\OrderBroadcaster;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +50,10 @@ final class UpdateOrderItems
 
         $fresh = $order->fresh(['items']);
         $this->broadcaster->changed($fresh, $kind);
+
+        if (CustomerName::keyFor($fresh->customer_name) !== CustomerName::keyFor($order->customer_name)) {
+            rescue(fn () => CustomerName::record($fresh->customer_name));
+        }
 
         return $fresh;
     }

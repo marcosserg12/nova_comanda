@@ -1,7 +1,7 @@
 @use('App\Support\Money')
 <div x-data="orderDraft" class="h-full min-h-0">
     <div x-data="{ sheet: false, menu: false }"
-         @focus-name.window="sheet = false; $nextTick(() => $refs.name?.focus())"
+         @focus-name.window="sheet = false"
          @edit-order.window="sheet = true"
          @keydown.escape.window="if (menu) { menu = false; $refs.trigger?.focus() } else { sheet = false }"
          class="relative flex h-full min-h-0 flex-col gap-3 @min-[1024px]/pane:flex-row @min-[1024px]/pane:gap-4">
@@ -15,7 +15,7 @@
                 @endforeach
 
                 <div class="ml-auto flex items-center gap-2">
-                    <input type="search" wire:model.live.debounce.150ms="search" @keydown.enter.prevent="$wire.addFirstSearchResult()"
+                    <input type="search" data-product-search wire:model.live.debounce.150ms="search" @keydown.enter.prevent="$wire.addFirstSearchResult()"
                            placeholder="Buscar…" aria-label="Buscar produto"
                            class="min-h-11 w-44 rounded-md border-2 border-nana-ink bg-white px-3 text-base font-semibold placeholder:text-nana-muted max-lg:min-h-12">
                     <div class="relative" @click.outside="menu = false">
@@ -95,11 +95,32 @@
                 @endif
             </div>
 
-            <label class="mt-2 block">
-                <span class="text-xs font-extrabold uppercase tracking-wider text-nana-muted">Nome do cliente</span>
-                <input type="text" wire:model="customerName" x-ref="name" autofocus autocomplete="off" maxlength="60"
-                       class="mt-1 block min-h-12 w-full rounded-md border-3 border-nana-red bg-white px-3 text-xl font-bold focus:border-nana-red">
-            </label>
+            <div x-data="nameSuggest" @focus-name.window="orderSent()" class="relative mt-2" data-name-field>
+                <label for="customer-name" class="text-xs font-extrabold uppercase tracking-wider text-nana-muted">Nome do cliente</label>
+                <div class="relative mt-1">
+                    <input id="customer-name" type="text" wire:model="customerName" x-ref="name" autofocus autocomplete="off" maxlength="60"
+                           role="combobox" aria-autocomplete="list" aria-controls="customer-name-suggestions" :aria-expanded="open.toString()"
+                           :aria-activedescendant="active >= 0 ? 'customer-name-option-' + active : null"
+                           @input="update()" @blur="close()"
+                           @keydown.arrow-down="if (open) { $event.preventDefault(); move(1) }"
+                           @keydown.arrow-up="if (open) { $event.preventDefault(); move(-1) }"
+                           @keydown.enter="enter($event)" @keydown.escape="escape($event)"
+                           class="block min-h-12 w-full rounded-md border-3 border-nana-red bg-white py-0 pl-3 pr-14 text-xl font-bold focus:border-nana-red">
+                    <button type="button" data-confirm-name x-show="($wire.customerName || '').trim() !== ''" x-cloak
+                            @mousedown.prevent @click="confirm()" aria-label="Confirmar nome" title="Confirmar nome"
+                            class="absolute right-1.5 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-md border-2 border-nana-ink bg-nana-green text-2xl font-extrabold leading-none text-white">✓</button>
+                </div>
+                <ul id="customer-name-suggestions" role="listbox" aria-label="Sugestões de nome" x-show="open" x-cloak
+                    class="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-md border-2 border-nana-ink bg-white shadow-hard">
+                    <template x-for="(item, index) in items" :key="item">
+                        <li :id="'customer-name-option-' + index" role="option" :aria-selected="(index === active).toString()"
+                            @mousedown.prevent @click="choose(item)" @mouseenter="active = index"
+                            :class="index === active ? 'bg-nana-yellow' : 'bg-white'"
+                            class="flex min-h-11 cursor-pointer items-center border-b-2 border-nana-line px-3 text-lg font-bold last:border-b-0"
+                            x-text="item"></li>
+                    </template>
+                </ul>
+            </div>
             @error('customerName') <p class="mt-1 text-sm font-bold text-nana-red">{{ $message }}</p> @enderror
 
             <div class="mt-3 grid grid-cols-2 gap-2" role="group" aria-label="Onde vai comer">

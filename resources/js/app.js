@@ -14,6 +14,7 @@ import { registerAnnouncer } from './announcer';
 import { registerLauncher } from './launcher';
 import { registerBalcao } from './balcao';
 import { registerStation } from './station';
+import { registerNameSuggest } from './name-suggest';
 
 document.addEventListener('alpine:init', () => {
     const Alpine = window.Alpine;
@@ -26,6 +27,7 @@ document.addEventListener('alpine:init', () => {
     registerLauncher(Alpine);
     registerBalcao(Alpine);
     registerStation(Alpine);
+    registerNameSuggest(Alpine);
 });
 
 registerNetworkErrors();
