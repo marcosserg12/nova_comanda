@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "test:js": "node tests/Js/station.test.mjs && node tests/Js/name-suggest.test.mjs"
     },
     "devDependencies": {
         "@fontsource/archivo": "^5.3.0",

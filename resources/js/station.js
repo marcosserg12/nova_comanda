@@ -12,6 +12,16 @@ function stored(key, min) {
     }
 }
 
+/** Width sent by the store installer (`?balcao=1920&cozinha=1920`, real monitor pixels). */
+function fromUrl(name, min) {
+    try {
+        const value = parseInt(new URLSearchParams(window.location.search).get(name) || '', 10);
+        return Number.isInteger(value) && value >= min && value <= 10000 ? value : null;
+    } catch (e) {
+        return null;
+    }
+}
+
 function store(key, value) {
     try { localStorage.setItem(key, String(value)); } catch (e) { /* armazenamento indisponível */ }
 }
@@ -46,6 +56,16 @@ export function registerStation(Alpine) {
         detecting: false,
         onResize: null,
         init() {
+            const left = fromUrl('balcao', 800);
+            if (left !== null) {
+                this.leftDevice = left;
+                store(LEFT_KEY, left);
+            }
+            const right = fromUrl('cozinha', KITCHEN_MIN);
+            if (right !== null) {
+                this.rightDevice = right;
+                store(RIGHT_KEY, right);
+            }
             this.onResize = () => {
                 this.viewport = window.innerWidth;
                 this.dpr = window.devicePixelRatio || 1;

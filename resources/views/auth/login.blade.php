@@ -1,9 +1,14 @@
 <x-layouts.app title="Entrar" body-class="bg-nana-red">
-    <main class="flex min-h-dvh items-center justify-center p-4">
+    <main class="flex min-h-dvh items-center justify-center gap-12 p-4">
+        <img src="{{ asset('images/nana-chef.png') }}" alt="" width="390" height="743" data-brand-mascot
+             class="hidden h-[min(80dvh,640px)] w-auto drop-shadow-[8px_8px_0_rgba(22,22,22,0.35)] lg:block">
         <form method="POST" action="{{ route('login.store') }}"
               class="w-full max-w-md rounded-2xl border-3 border-nana-ink bg-nana-cream p-8 shadow-[8px_8px_0_var(--color-nana-ink)]">
             @csrf
-            <h1 class="font-display text-4xl leading-none text-nana-red">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</h1>
+            <div class="flex items-center gap-4">
+                <x-ui.brand-face class="size-20 border-3 lg:hidden" />
+                <h1 class="font-display text-4xl leading-none text-nana-red">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</h1>
+            </div>
             <p class="mt-2 text-lg font-semibold text-nana-muted">Entre para usar o balcão, a cozinha ou a administração.</p>
 
             <label class="mt-6 block">

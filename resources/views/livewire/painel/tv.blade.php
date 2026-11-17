@@ -20,7 +20,11 @@
             @endif
         </div>
         <div class="mt-auto flex items-end justify-between gap-[1vw] pt-[1vw]">
-            <span class="font-display text-[2vw] leading-none text-nana-red">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</span>
+            <span class="flex items-end gap-[1.2vw]">
+                <img src="{{ asset('images/nana-chef.png') }}" alt="" width="390" height="743" data-brand-mascot
+                     class="h-[13vw] w-auto drop-shadow-[0.35vw_0.35vw_0_rgba(22,22,22,0.25)]">
+                <span class="pb-[0.6vw] font-display text-[3vw] leading-none text-nana-red">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</span>
+            </span>
             <div class="opacity-40 transition hover:opacity-100 focus-within:opacity-100">
                 <x-ui.screens-menu compact up current="painel" />
             </div>

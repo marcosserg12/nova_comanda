@@ -27,6 +27,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Nana Comanda')
+            ->brandLogo(fn () => view('filament.brand'))
+            ->brandLogoHeight('2.75rem')
+            ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Red,
             ])

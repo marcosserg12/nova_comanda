@@ -1,6 +1,9 @@
 @props(['title' => null, 'current' => null, 'screens' => null])
 <header {{ $attributes->class('flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b-3 border-nana-ink bg-nana-red px-4 py-2 text-nana-cream') }}>
-    <span class="font-display text-2xl leading-none">{{ $title ?? \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</span>
+    <span class="flex items-center gap-2">
+        <x-ui.brand-face class="size-10" />
+        <span class="font-display text-2xl leading-none">{{ $title ?? \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</span>
+    </span>
     @isset($badge)
         {{ $badge }}
     @endisset

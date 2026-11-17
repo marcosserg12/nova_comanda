@@ -13,5 +13,4 @@ deploy/*.sh text eol=lf
 deploy/cron/* text eol=lf
 deploy/nginx/* text eol=lf
 deploy/systemd/* text eol=lf
-loja/*.bat text eol=crlf
-loja/*.ps1 text eol=crlf
+loja/**/*.ps1 text eol=crlf

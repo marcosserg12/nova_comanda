@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#D62828">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ asset('images/nana-icone-180.png') }}">
     <title>{{ $title }} · Nana Comanda</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

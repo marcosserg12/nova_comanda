@@ -4,6 +4,7 @@
     <span hidden wire:key="sync-{{ md5(json_encode([$readyNumbers, $preparingNumbers])) }}" x-init="sync(@js($readyNumbers), @js($preparingNumbers))"></span>
 
     <header class="relative border-b-4 border-nana-ink bg-nana-red px-4 pb-4 pt-5 text-center text-nana-cream">
+        <x-ui.brand-face class="mx-auto mb-2 size-16 border-3" />
         <h1 class="font-display text-3xl leading-none">{{ \App\Models\Setting::get(\App\Models\Setting::RESTAURANT_NAME) }}</h1>
         <p class="mt-1.5 text-sm font-bold text-[#FFE3B0]">Acompanhe seu pedido</p>
         <div class="absolute right-3 top-3">
