@@ -22,15 +22,21 @@ Endereço do sistema: **https://comanda.mswebsolutions.site**
 
 1. Ligue os dois monitores. Em Windows → Configurações → Sistema → Tela, deixe-os lado a lado (balcão à esquerda, cozinha à direita), na mesma altura. Anote a resolução de cada um.
 2. Se a cozinha usar monitor touch, vá em Painel de Controle → Configurações do Tablet PC → **Configurar** → Entrada por toque, e toque no monitor da cozinha quando ele pedir.
-3. Crie um atalho na área de trabalho com este destino. A largura da janela (`--window-size`) é a **soma das larguras dos dois monitores**, e a altura é a de um monitor. Exemplo com dois monitores de 18,5" (1366×768 cada): `2732,768`.
-   ```
-   "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\nana-estacao" --app="https://comanda.mswebsolutions.site/estacao" --window-position=0,0 --window-size=2732,768 --autoplay-policy=no-user-gesture-required
-   ```
-4. Abra o atalho e, na tela Balcão + Cozinha, clique em **"Detectar monitores"** uma vez. O Chrome pergunta se pode "gerenciar janelas": clique em **Permitir**. Se não funcionar, entre em `/admin` → Configurações e ajuste a **largura do monitor do balcão** (o padrão é 1366).
-5. Se houver só um monitor ligado, a tela Balcão + Cozinha mostra apenas o balcão (com a coluna "Na cozinha") e um aviso pequeno: "Cozinha no 2º monitor não encontrada". Confira o cabo do segundo monitor.
-6. Para abrir sozinho ao ligar: tecle Windows+R, digite `shell:startup` e copie o atalho para essa pasta.
+3. Copie a pasta `loja` do sistema para o PC (por pendrive, por exemplo) e clique duas vezes em **`instalar-atalho.bat`**. Ele:
+   - mede os monitores e cria na área de trabalho o atalho **"Nana Comanda - Balcão + Cozinha"**;
+   - pergunta se o sistema deve **abrir sozinho quando o computador ligar** (responda S);
+   - abre a janela, confere se ela cobre os dois monitores e se corrige sozinho.
+
+   Se trocar um monitor ou mudar a posição deles, rode o instalador de novo.
+4. Na janela que abriu, entre como `balcao` e marque **Manter conectado neste aparelho**.
+5. Clique uma vez em **"Detectar monitores"**, no topo. O Chrome pergunta se pode "gerenciar janelas": clique em **Permitir**. O sistema mede o monitor do balcão e o da cozinha e acerta a divisão, e isso fica guardado neste PC. Se não funcionar, entre em `/admin` → Configurações e ajuste as larguras dos monitores (o padrão é 1366).
+6. Se houver só um monitor ligado, a tela Balcão + Cozinha mostra apenas o balcão (com a coluna "Na cozinha") e um aviso pequeno: "Cozinha no 2º monitor não encontrada". Confira o cabo do segundo monitor.
 7. Em Windows → Energia, deixe a tela e o computador **nunca** desligarem.
-8. Faça login como `balcao` e marque **Manter conectado neste aparelho**.
+
+Sem o instalador: crie à mão um atalho com o destino abaixo. `--window-size` é a soma das larguras dos dois monitores e a altura de um deles (o exemplo é para dois monitores de 1366×768). Para abrir ao ligar, tecle Windows+R, digite `shell:startup` e copie o atalho para essa pasta.
+```
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\nana-estacao" --app="https://comanda.mswebsolutions.site/estacao" --window-position=0,0 --window-size=2732,768
+```
 
 ## TV do salão (Google TV + Fully Kiosk Browser)
 
